@@ -523,6 +523,7 @@ resourcestring
       {Константи використовувані в системі авансовий очет}
 
   J4_SP_RAZDELENIE_FORM_CAPTION                = 'Довідник разшифровок';
+  J4_SP_COST_FORM_CAPTION                      = 'Довідник витрат';
   J4_SP_RAZDELENIE_FORM_LONG_NAME              = 'Повна назва';
   J4_SP_RAZDELENIE_FORM_SHORT_NAME             = 'коротка назва';
   J4_SP_RAZDELENIE_FORM_FIND_LONG_NAME         = 'Пошук по повній назві';

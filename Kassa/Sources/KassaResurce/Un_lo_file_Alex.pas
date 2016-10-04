@@ -251,6 +251,8 @@ function LoadSpRazdelAvanse(AOwner:TComponent; id_user: int64; DBHandle: TpFIBDa
 function LoadEditSpRazdelAvanse(AOwner:TComponent; id_user: int64; DBHandle: TpFIBDatabase):Integer;
 function LoadSpEditSpRazdelAvanse(AOwner:TComponent; id_user: int64; DBHandle: TpFIBDatabase):Variant;
 
+function LoadSpEditSpCostAvanse(AOwner:TComponent; id_user: int64; DBHandle: TpFIBDatabase):Variant;
+
 function LoadSpTypeDoc(AOwner:TComponent; id_user: int64; DBHandle: TpFIBDatabase): Variant;
 function LoadEditSpTypeDoc(AOwner:TComponent; id_user: int64; DBHandle: TpFIBDatabase):Integer;
 function LoadSpEditSpTypeDoc(AOwner:TComponent; id_user: int64; DBHandle: TpFIBDatabase):Variant;
@@ -765,6 +767,30 @@ begin
 
   end;
   LoadSpEditSpRazdelAvanse := Res;
+end;
+
+function LoadSpEditSpCostAvanse(AOwner:TComponent; id_user: int64; DBHandle: TpFIBDatabase): Variant;
+var func:function(AOwner:TComponent; id_user : int64; DBHandle: TpFIBDatabase):Variant; stdcall;
+    HandlePack: HModule;
+    Res: Variant;
+begin
+  HandlePack := GetModuleHandle('SpCostsBPL.bpl');
+  if HandlePack<32
+  then begin
+      HandlePack := LoadPackage(ExtractFilePath(Application.ExeName)+AVANCE_PATH+'SpCostsBPL.bpl');
+  end;
+
+  if HandlePack > 0 then
+  begin
+            @func := GetProcAddress(HandlePack,PChar('SpEditSpCostAvanse'));
+            if @func<>nil
+            then Res := func(AOwner, id_user,DBHandle)
+            else begin
+                MessageBox(TForm(AOwner).Handle,PChar(ErrorLLibrary + 'SpCostBPL.bpl'),PChar(ErrorWarningC),MB_OK and MB_ICONWARNING);
+            end;
+
+  end;
+  LoadSpEditSpCostAvanse := Res;
 end;
 
 function LoadSpTypeDoc(AOwner:TComponent; id_user: int64; DBHandle: TpFIBDatabase): Variant;
