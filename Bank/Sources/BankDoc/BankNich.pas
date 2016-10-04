@@ -386,7 +386,7 @@ var
   Ds: TpFIBDataSet;
   razd_flag_1: Currency;
   DataSetProc:TpFIBDataSet;
-  dataset_data:string;
+  dataset_data,month_str:string;
   i, k : Integer;
 begin
   if (cxParamGridTableView1.DataController.Summary.FooterSummaryValues[0] <> null) then
@@ -452,7 +452,10 @@ begin
     end;
     try
         cxParamGridTableView1.DataController.FocusedRowIndex:=cxParamGridTableView1.DataController.RecordCount-1;
-        dataset_data:='01.0'+VarToStr(cxParamGridTableView1month.DataBinding.DataController.Values[cxParamGridTableView1.DataController.FocusedRowIndex, 5])+'.'+VarToStr(cxParamGridTableView1ColumnYear.DataBinding.DataController.Values[cxParamGridTableView1.DataController.FocusedRowIndex, 1]);
+        month_str := VarToStr(cxParamGridTableView1month.DataBinding.DataController.Values[cxParamGridTableView1.DataController.FocusedRowIndex, 5]);
+        if (Length(month_str)<2) then
+          month_str := '0'+month_str;
+        dataset_data:='01.'+month_str+'.'+VarToStr(cxParamGridTableView1ColumnYear.DataBinding.DataController.Values[cxParamGridTableView1.DataController.FocusedRowIndex, 1]);
         DataSetProc:=TpFIBDataSet.Create(self);
         DataSetProc.Database:=DB;
         DataSetProc.Transaction:=pFIBTransaction1;
@@ -552,7 +555,7 @@ var
   format: TFormatSettings;
   f:string;
   DataSetProc:TpFIBDataSet;
-  dataset_data:string;
+  dataset_data, month_str:string;
   i, k : Integer;
 begin
   k:=cxParamGridTableView1.DataController.FocusedRecordIndex;
@@ -655,7 +658,10 @@ begin
 
       try
         cxParamGridTableView1.DataController.FocusedRowIndex:=cxParamGridTableView1.DataController.RecordCount-1;
-        dataset_data:='01.0'+VarToStr(cxParamGridTableView1month.DataBinding.DataController.Values[cxParamGridTableView1.DataController.FocusedRowIndex, 5])+'.'+VarToStr(cxParamGridTableView1ColumnYear.DataBinding.DataController.Values[cxParamGridTableView1.DataController.FocusedRowIndex, 1]);
+        month_str := VarToStr(cxParamGridTableView1month.DataBinding.DataController.Values[cxParamGridTableView1.DataController.FocusedRowIndex, 5]);
+        if Length(month_str) < 2 then
+          month_str := '0'+month_str;
+        dataset_data:='01.'+month_str+'.'+VarToStr(cxParamGridTableView1ColumnYear.DataBinding.DataController.Values[cxParamGridTableView1.DataController.FocusedRowIndex, 1]);
         DataSetProc:=TpFIBDataSet.Create(self);
         DataSetProc.Database:=DB;
         DataSetProc.Transaction:=pFIBTransaction1;

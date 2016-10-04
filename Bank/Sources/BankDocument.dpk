@@ -55,7 +55,22 @@ requires
   St_Loader,
   FR7,
   cn_Consts,
-  cn_Common;
+  cn_Common,
+  cxGridVCLD7,
+  cxExportVCLD7,
+  cxTreeListVCLD7,
+  cxCommonEditingVCLD7,
+  tee,
+  fqb70,
+  bdertl,
+  fsDB7,
+  VclSmp,
+  Halcyon6D7,
+  visualclx,
+  designide,
+  vclactnband,
+  FIBPlus7,
+  visualdbclx;
 
 contains
   BankSelectShablon in 'BankDoc\BankSelectShablon.pas' {fmBankSelectShablon},
@@ -69,6 +84,14 @@ contains
   BankSelectDocProvVstrech in 'BankDoc\BankSelectDocProvVstrech.pas' {fmBankSelectDocProvVstrech},
   BankSelectKomisDoc in 'BankDoc\BankSelectKomisDoc.pas' {fmBankSelectKomisDoc},
   BankKomOrder in 'BankDoc\BankKomOrder.pas' {fmBankKomOrder},
-  BankSelectPrintVip in 'BankDoc\BankSelectPrintVip.pas' {fmBankSelectPrintVip};
+  BankSelectPrintVip in 'BankDoc\BankSelectPrintVip.pas' {fmBankSelectPrintVip},
+  BankExpertSysSch in 'BankDoc\BankExpertSysSch.pas' {frmExpertSchSys},
+  BankMoveToDay in 'BankDoc\BankMoveToDay.pas' {fmBankMoveToDay},
+  BankNich in 'bankdoc\BankNich.pas' {fmBankNich},
+  BankNichAdd in 'BankDoc\BankNichAdd.pas' {fmBankNichAdd},
+  BankNichAddSmt in 'BankDoc\BankNichAddSmt.pas' {BankNichAddSm},
+  BankPrihodRashod in 'BankDoc\BankPrihodRashod.pas' {fmBankPrihodRashod},
+  BankSelectKassa in 'BankDoc\BankSelectKassa.pas' {fmBankSelectKassa},
+  ProgressFormBankDoc in 'BankDoc\ProgressFormBankDoc.pas' {fmProgressFormBankDoc};
 
 end.
