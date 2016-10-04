@@ -1,6 +1,6 @@
 object OstCurForm: TOstCurForm
-  Left = 351
-  Top = 213
+  Left = 236
+  Top = 28
   BorderStyle = bsDialog
   ClientHeight = 473
   ClientWidth = 742
@@ -482,9 +482,9 @@ object OstCurForm: TOstCurForm
       ParentFont = False
     end
     object cxGrid2: TcxGrid
-      Left = 440
+      Left = 446
       Top = 1
-      Width = 301
+      Width = 295
       Height = 80
       Align = alRight
       TabOrder = 0
@@ -577,9 +577,9 @@ object OstCurForm: TOstCurForm
       end
     end
     object cxDBTextEdit2: TcxDBTextEdit
-      Left = 16
+      Left = 6
       Top = 8
-      Width = 81
+      Width = 80
       Height = 21
       DataBinding.DataField = 'DOC_TIPD'
       DataBinding.DataSource = DocOstDataSource
@@ -593,9 +593,9 @@ object OstCurForm: TOstCurForm
       TabOrder = 1
     end
     object cxDBTextEdit3: TcxDBTextEdit
-      Left = 232
+      Left = 198
       Top = 8
-      Width = 105
+      Width = 97
       Height = 21
       DataBinding.DataField = 'DOC_DATE_DOC'
       DataBinding.DataSource = DocOstDataSource
@@ -611,7 +611,7 @@ object OstCurForm: TOstCurForm
     object cxDBTextEdit4: TcxDBTextEdit
       Left = 56
       Top = 32
-      Width = 369
+      Width = 386
       Height = 21
       DataBinding.DataField = 'NAME_IN'
       DataBinding.DataSource = DocOstDataSource
@@ -627,7 +627,7 @@ object OstCurForm: TOstCurForm
     object cxDBTextEdit5: TcxDBTextEdit
       Left = 56
       Top = 56
-      Width = 369
+      Width = 386
       Height = 21
       DataBinding.DataField = 'NAME_OUT'
       DataBinding.DataSource = DocOstDataSource
@@ -641,7 +641,7 @@ object OstCurForm: TOstCurForm
       TabOrder = 4
     end
     object cxDBTextEdit6: TcxDBTextEdit
-      Left = 352
+      Left = 295
       Top = 8
       Width = 73
       Height = 21
@@ -657,9 +657,9 @@ object OstCurForm: TOstCurForm
       TabOrder = 5
     end
     object cxDBButtonEdit1: TcxDBButtonEdit
-      Left = 104
+      Left = 87
       Top = 8
-      Width = 121
+      Width = 109
       Height = 21
       DataBinding.DataField = 'DOC_NUM_DOC'
       DataBinding.DataSource = DocOstDataSource
@@ -677,6 +677,22 @@ object OstCurForm: TOstCurForm
       Style.Font.Name = 'MS Sans Serif'
       Style.Font.Style = [fsBold]
       TabOrder = 6
+    end
+    object cxDBTextEdit1: TcxDBTextEdit
+      Left = 369
+      Top = 8
+      Width = 73
+      Height = 21
+      DataBinding.DataField = 'DATE_POLUCH'
+      DataBinding.DataSource = DocOstDataSource
+      ParentFont = False
+      Style.Color = clMoneyGreen
+      Style.Font.Charset = DEFAULT_CHARSET
+      Style.Font.Color = clWindowText
+      Style.Font.Height = -11
+      Style.Font.Name = 'MS Sans Serif'
+      Style.Font.Style = [fsBold]
+      TabOrder = 7
     end
   end
   object cxSplitterInfo: TcxSplitter
@@ -860,7 +876,6 @@ object OstCurForm: TOstCurForm
     end
     object DocOstDataSetPRICE: TFIBBCDField
       FieldName = 'PRICE'
-      Size = 4
       RoundByScale = True
     end
     object DocOstDataSetSUMMA: TFIBBCDField
@@ -1051,6 +1066,9 @@ object OstCurForm: TOstCurForm
     end
     object DocOstDataSetPRIZNAK: TFIBIntegerField
       FieldName = 'PRIZNAK'
+    end
+    object DocOstDataSetDATE_POLUCH: TFIBDateField
+      FieldName = 'DATE_POLUCH'
     end
   end
   object DocOstDataSource: TDataSource

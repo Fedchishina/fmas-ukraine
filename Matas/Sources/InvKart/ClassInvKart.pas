@@ -76,7 +76,7 @@ procedure Create_Full_Inv_num(id_kart : int64; inv_num : integer);
 procedure Otmena_amort(id_ved : int64);
 procedure Save_amort_setings(id_ved : int64);
 procedure Save_to_ved(id_ved : int64);
-procedure Save_amort_calc(id_ved : int64; id_session:Integer);
+procedure Save_amort_calc(id_ved : int64; id_session:Integer;only_check:Integer);
 procedure Save_pereocenku(id_user : int64; user_name, computer, Date_doc,  Date_rec : string; ID_SESSION_PER, PUB_ID_DOC : int64; TIP_OPER : Integer; ID_KARTI : int64; UNDELOPER: integer; NOTE:string);
 procedure Save_mass_pereocenku(id_mo_input, id_user : int64; user_name, computer, Date_doc,  Date_rec : string; ID_SESSION_PER, PUB_ID_DOC : int64; TIP_OPER : Integer; UNDELOPER: integer);
 
@@ -1135,7 +1135,7 @@ begin
     Class_Transaction_Wr.Commit;
 end;
 
-procedure Save_amort_calc(id_ved : int64; id_session:Integer);
+procedure Save_amort_calc(id_ved : int64; id_session:Integer; only_check:Integer);
 begin
     Class_StoredProc.Database:=Class_Database;
     Class_StoredProc.Transaction:=Class_Transaction_Wr;
@@ -1144,6 +1144,7 @@ begin
     Class_StoredProc.Prepare;
     Class_StoredProc.ParamByName('ID_AMORT_VED').AsInt64   := id_ved;
     Class_StoredProc.ParamByName('ID_SESSION').AsInteger   := id_session;
+    Class_StoredProc.ParamByName('ONLY_CHECK').AsInteger   := only_check;
     try
         Class_StoredProc.ExecProc;
     except on E:Exception do begin

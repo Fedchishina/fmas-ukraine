@@ -24,7 +24,7 @@ object TipDocForm: TTipDocForm
   object TopPanel: TPanel
     Left = 0
     Top = 0
-    Width = 642
+    Width = 634
     Height = 50
     Align = alTop
     TabOrder = 2
@@ -654,7 +654,7 @@ object TipDocForm: TTipDocForm
     Left = 0
     Top = 50
     Width = 185
-    Height = 318
+    Height = 312
     Styles.Background = cxStyle2
     Styles.Content = cxStyle2
     Styles.Inactive = cxStyle9
@@ -703,7 +703,7 @@ object TipDocForm: TTipDocForm
     Left = 185
     Top = 50
     Width = 8
-    Height = 318
+    Height = 312
     HotZoneClassName = 'TcxSimpleStyle'
     HotZone.SizePercent = 100
     Control = cxDBTreeList1
@@ -711,16 +711,16 @@ object TipDocForm: TTipDocForm
   object Panel1: TPanel
     Left = 193
     Top = 50
-    Width = 449
-    Height = 318
+    Width = 441
+    Height = 312
     Align = alClient
     BevelOuter = bvNone
     Caption = 'Panel1'
     TabOrder = 0
     object cxGrid2: TcxGrid
       Left = 0
-      Top = 189
-      Width = 449
+      Top = 183
+      Width = 441
       Height = 129
       Align = alBottom
       PopupMenu = PopupMenu2
@@ -781,8 +781,8 @@ object TipDocForm: TTipDocForm
     object cxGrid1: TcxGrid
       Left = 0
       Top = 0
-      Width = 449
-      Height = 181
+      Width = 441
+      Height = 175
       Align = alClient
       PopupMenu = PopupMenu1
       TabOrder = 0
@@ -854,8 +854,8 @@ object TipDocForm: TTipDocForm
     end
     object cxSplitter2: TcxSplitter
       Left = 0
-      Top = 181
-      Width = 449
+      Top = 175
+      Width = 441
       Height = 8
       HotZoneClassName = 'TcxSimpleStyle'
       HotZone.SizePercent = 100
@@ -865,7 +865,6 @@ object TipDocForm: TTipDocForm
     end
   end
   object fdbTipDoc: TpFIBDatabase
-    DBName = 'D:\Work\Database_DonNU\FULL_DB.IB'
     DBParams.Strings = (
       'user_name=SYSDBA'
       'password=masterkey'
@@ -986,6 +985,9 @@ object TipDocForm: TTipDocForm
     end
     object TipDocDataSetTIP_WORK: TFIBIntegerField
       FieldName = 'TIP_WORK'
+    end
+    object TipDocDataSetCHECK_DATE_POLUCH: TFIBIntegerField
+      FieldName = 'CHECK_DATE_POLUCH'
     end
   end
   object WriteTransaction: TpFIBTransaction

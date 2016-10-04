@@ -654,6 +654,7 @@ type
     N12: TMenuItem;
     frxDBDataset: TfrxDBDataset;
     btn1: TToolButton;
+    dsCheckOper: TpFIBDataSet;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure ActionCloseExecute(Sender: TObject);
     procedure ActionAddExecute(Sender: TObject);
@@ -1350,23 +1351,51 @@ begin
                 // Удаляем поле
                if DataSetOsn.FieldByName('ID_OPER_OPR').Value <> '0' then
                begin
-                   ShowMessage(MAT_INV_Error_for_del_kart);
-                   Exit;
+                   dsCheckOper.Close;
+                   dsCheckOper.Prepare;
+                   dsCheckOper.ParamByName('id_oper').AsInteger := DataSetOsn.FieldByName('ID_OPER_OPR').Value;
+                   dsCheckOper.Open;
+                   if not dsCheckOper.Eof then
+                   begin
+                     ShowMessage(MAT_INV_Error_for_del_kart);
+                     Exit;
+                   end;
                end;
                if DataSetOsn.FieldByName('ID_OPER_EXPL').Value <> '0' then
                begin
-                   ShowMessage(MAT_INV_Error_for_del_kart);
-                   Exit;
+                   dsCheckOper.Close;
+                   dsCheckOper.Prepare;
+                   dsCheckOper.ParamByName('id_oper').AsInteger := DataSetOsn.FieldByName('ID_OPER_EXPL').Value;
+                   dsCheckOper.Open;
+                   if not dsCheckOper.Eof then
+                   begin
+                     ShowMessage(MAT_INV_Error_for_del_kart);
+                     Exit;
+                   end;
                end;
                if DataSetOsn.FieldByName('ID_OPER_UPDATE').Value <> '0' then
                begin
-                   ShowMessage(MAT_INV_Error_for_del_kart);
-                   Exit;
+                   dsCheckOper.Close;
+                   dsCheckOper.Prepare;
+                   dsCheckOper.ParamByName('id_oper').AsInteger := DataSetOsn.FieldByName('ID_OPER_UPDATE').Value;
+                   dsCheckOper.Open;
+                   if not dsCheckOper.Eof then
+                   begin
+                     ShowMessage(MAT_INV_Error_for_del_kart);
+                     Exit;
+                   end;
                end;
                if DataSetOsn.FieldByName('ID_OPER_OUT').Value <> '0' then
                begin
-                   ShowMessage(MAT_INV_Error_for_del_kart);
-                   Exit;
+                   dsCheckOper.Close;
+                   dsCheckOper.Prepare;
+                   dsCheckOper.ParamByName('id_oper').AsInteger := DataSetOsn.FieldByName('ID_OPER_OUT').Value;
+                   dsCheckOper.Open;
+                   if not dsCheckOper.Eof then
+                   begin
+                     ShowMessage(MAT_INV_Error_for_del_kart);
+                     Exit;
+                   end;
                end;
                 id_del := DataSetKart['ID_INV_GRP'];
                 DeleteKartochku(DataSetKart['R_ID_KART']);

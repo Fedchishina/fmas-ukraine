@@ -1,9 +1,9 @@
 object fmCreateVedomost: TfmCreateVedomost
-  Left = 735
-  Top = 303
+  Left = 394
+  Top = 161
   BorderStyle = bsDialog
   Caption = 'fmCreateVedomost'
-  ClientHeight = 160
+  ClientHeight = 194
   ClientWidth = 386
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -17,7 +17,7 @@ object fmCreateVedomost: TfmCreateVedomost
   TextHeight = 13
   object cxButtonCancel: TcxButton
     Left = 256
-    Top = 126
+    Top = 142
     Width = 120
     Height = 25
     Cancel = True
@@ -102,7 +102,7 @@ object fmCreateVedomost: TfmCreateVedomost
   end
   object cxButtonCreate: TcxButton
     Left = 120
-    Top = 126
+    Top = 142
     Width = 120
     Height = 25
     Caption = 'cxButtonCreate'
@@ -289,11 +289,27 @@ object fmCreateVedomost: TfmCreateVedomost
     TabOrder = 10
     Visible = False
   end
+  object cxOnlyCheck: TcxCheckBox
+    Left = 0
+    Top = 118
+    Width = 177
+    Height = 21
+    ParentFont = False
+    Properties.DisplayUnchecked = 'False'
+    Properties.OnChange = cxSCHPropertiesChange
+    Properties.Caption = #1058#1110#1083#1100#1082#1080' '#1074#1110#1076#1084#1110#1095#1077#1085#1110' '#1082#1072#1088#1090#1082#1080
+    Style.Font.Charset = DEFAULT_CHARSET
+    Style.Font.Color = clWindowText
+    Style.Font.Height = -11
+    Style.Font.Name = 'MS Sans Serif'
+    Style.Font.Style = [fsBold]
+    TabOrder = 11
+  end
   object pFIBStoredProcForVed: TpFIBStoredProc
     Database = fmMainIvKartForm.DatabaseMain
     Transaction = fmMainIvKartForm.WriteTransaction
     Left = 8
-    Top = 112
+    Top = 144
   end
   object pFIBDatabase1: TpFIBDatabase
     DefaultTransaction = pFIBTransaction1
@@ -301,12 +317,12 @@ object fmCreateVedomost: TfmCreateVedomost
     Timeout = 0
     WaitForRestoreConnect = 0
     Left = 40
-    Top = 112
+    Top = 144
   end
   object pFIBTransaction1: TpFIBTransaction
     DefaultDatabase = pFIBDatabase1
     TimeoutAction = TARollback
     Left = 80
-    Top = 112
+    Top = 144
   end
 end

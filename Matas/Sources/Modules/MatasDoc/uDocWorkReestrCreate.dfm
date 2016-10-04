@@ -1,8 +1,8 @@
 object DocWorkReestrCreate: TDocWorkReestrCreate
   Left = 443
   Top = 393
-  Width = 420
-  Height = 140
+  Width = 430
+  Height = 155
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText

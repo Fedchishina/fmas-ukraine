@@ -214,6 +214,18 @@ type
     cxgrdbclmnGrid1DBTableView1DBColumn2: TcxGridDBColumn;
     N7: TMenuItem;
     DS_helping: TpFIBDataSet;
+    DocOstDataSetGROUP_4: TFIBStringField;
+    DocOstDataSetGROUP_3: TFIBStringField;
+    DocOstDataSetGROUP_2: TFIBStringField;
+    DocOstDataSetGROUP_1: TFIBStringField;
+    cxGrid1Gruppa4: TcxGridDBColumn;
+    cxGrid1Gruppa3: TcxGridDBColumn;
+    cxGrid1Gruppa2: TcxGridDBColumn;
+    cxGrid1Gruppa1: TcxGridDBColumn;
+    cxShowPanelGrupp: TcxCheckBox;
+    cxShowGrpTMC: TcxCheckBox;
+    cxDBTextEdit1: TcxDBTextEdit;
+    DocOstDataSetDATE_POLUCH: TFIBDateField;
     procedure cxMatOtvPropertiesButtonClick(Sender: TObject;
       AButtonIndex: Integer);
     procedure FormCreate(Sender: TObject);
@@ -246,6 +258,8 @@ type
     procedure acExportExecute(Sender: TObject);
     procedure actRozedExecute(Sender: TObject);
     procedure N7Click(Sender: TObject);
+    procedure cxShowPanelGruppPropertiesChange(Sender: TObject);
+    procedure cxCheckBox1PropertiesChange(Sender: TObject);
   private
     { Private declarations }
    DBHANDLE : TISC_DB_HANDLE;
@@ -1042,18 +1056,18 @@ begin
    ReportDataSet.ParamByName('PBAL_ID_SCH').Value:=-1;
    ReportDataSet.CloseOpen(false);
 
-   if fp.cxPrintForm.ItemIndex=9 then frReport.LoadFromFile(ExtractFilePath(Application.ExeName)+ _PATH_REPORTS+'\inv_ved_os_donguet.fr3');
-   if fp.cxPrintForm.ItemIndex=10 then frReport.LoadFromFile(ExtractFilePath(Application.ExeName)+ _PATH_REPORTS+'\inv_cmp_os_donguet.fr3');
-   if fp.cxPrintForm.ItemIndex=11 then frReport.LoadFromFile(ExtractFilePath(Application.ExeName)+ _PATH_REPORTS+'\inv_ved_mat_donguet.fr3');
-   if fp.cxPrintForm.ItemIndex=12 then frReport.LoadFromFile(ExtractFilePath(Application.ExeName)+ _PATH_REPORTS+'\inv_cmp_mat.fr3');
+   if fp.cxPrintForm.ItemIndex=9 then frReport.LoadFromFile(ExtractFilePath(Application.ExeName)+ _PATH_REPORTS+'\inv_ved_na_2015.fr3');
+   if fp.cxPrintForm.ItemIndex=10 then frReport.LoadFromFile(ExtractFilePath(Application.ExeName)+ _PATH_REPORTS+'\inv_cmp_na_2015.fr3');
+   if fp.cxPrintForm.ItemIndex=11 then frReport.LoadFromFile(ExtractFilePath(Application.ExeName)+ _PATH_REPORTS+'\inv_ved_zap_2015.fr3');
+   if fp.cxPrintForm.ItemIndex=12 then frReport.LoadFromFile(ExtractFilePath(Application.ExeName)+ _PATH_REPORTS+'\inv_cmp_zap_2015.fr3');
    if fp.cxPrintForm.ItemIndex=13 then frReport.LoadFromFile(ExtractFilePath(Application.ExeName)+ _PATH_REPORTS+'\inv_ved_nma_donguet.fr3');
-   if fp.cxPrintForm.ItemIndex=14 then frReport.LoadFromFile(ExtractFilePath(Application.ExeName)+ _PATH_REPORTS+'\inv_cmp_nma_donguet.fr3');
-   if fp.cxPrintForm.ItemIndex=15 then frReport.LoadFromFile(ExtractFilePath(Application.ExeName)+ _PATH_REPORTS+'\inv_ved_bso.fr3');
-   if fp.cxPrintForm.ItemIndex=16 then frReport.LoadFromFile(ExtractFilePath(Application.ExeName)+ _PATH_REPORTS+'\inv_cmp_bso.fr3');
-   if fp.cxPrintForm.ItemIndex=18 then frReport.LoadFromFile(ExtractFilePath(Application.ExeName)+ _PATH_REPORTS+'\inv_ved_na_vidp_zbereg.fr3');
+   if fp.cxPrintForm.ItemIndex=14 then frReport.LoadFromFile(ExtractFilePath(Application.ExeName)+ _PATH_REPORTS+'\inv_ved_bso_2015.fr3');
+   if fp.cxPrintForm.ItemIndex=15 then frReport.LoadFromFile(ExtractFilePath(Application.ExeName)+ _PATH_REPORTS+'\drag_inv_ved.fr3');
+   if fp.cxPrintForm.ItemIndex=16 then frReport.LoadFromFile(ExtractFilePath(Application.ExeName)+ _PATH_REPORTS+'\inv_ved_vidp_zbereg_2015.fr3');
+
    end;
 
-   if (fp.cxPrintForm.ItemIndex=17) then
+   if (fp.cxPrintForm.ItemIndex=15) then
    begin
    prefix:='WHERE';
    ReportDataSet.Close;
@@ -1075,14 +1089,14 @@ begin
     end;
     Add(' ORDER BY BAL_SCH_NUMBER, NAME, INVNUM');
 
-    if fp.cxPrintForm.ItemIndex=17 then frReport.LoadFromFile(ExtractFilePath(Application.ExeName)+ _PATH_REPORTS+'\drag_inv_ved.fr3');
+    if fp.cxPrintForm.ItemIndex=15 then frReport.LoadFromFile(ExtractFilePath(Application.ExeName)+ _PATH_REPORTS+'\drag_inv_ved.fr3');
   end;
   ReportDataSet.Prepare;
   ReportDataSet.ParamByName('ID_MO').Value:=ID_MO;
   ReportDataSet.ParamByName('PERIOD').Value:=PERIOD;
    end;
 
-  if (fp.cxPrintForm.ItemIndex>=9) and (fp.cxPrintForm.ItemIndex<=18) then
+  if (fp.cxPrintForm.ItemIndex>=9) and (fp.cxPrintForm.ItemIndex<=16) then
   begin
   if not ReportDataSet.IsEmpty then
   begin
@@ -1267,6 +1281,19 @@ begin
    end;
 
  CloseWaitWindow(w);  
+end;
+
+procedure TOstBaseForm.cxShowPanelGruppPropertiesChange(Sender: TObject);
+begin
+ cxGrid1DBTableView1.OptionsView.GroupByBox := cxShowPanelGrupp.Checked;
+end;
+
+procedure TOstBaseForm.cxCheckBox1PropertiesChange(Sender: TObject);
+begin
+  cxGrid1Gruppa4.Visible := cxShowGrpTMC.Checked;
+  cxGrid1Gruppa3.Visible := cxShowGrpTMC.Checked;
+  cxGrid1Gruppa2.Visible := cxShowGrpTMC.Checked;
+  cxGrid1Gruppa1.Visible := cxShowGrpTMC.Checked;
 end;
 
 end.

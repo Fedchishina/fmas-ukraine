@@ -18,6 +18,8 @@ type
     ID_SCH: TcxGridDBColumn;
     SCH_NUMBER: TcxGridDBColumn;
     SCH_TITLE: TcxGridDBColumn;
+    ID_POS: TcxGridDBColumn;
+    NAME_POS: TcxGridDBColumn;
     cxGridPosDBTableView1DBColumn1: TcxGridDBColumn;
     cxGridPosDBTableView1DBColumn2: TcxGridDBColumn;
     cxGridPosDBTableView1DBColumn3: TcxGridDBColumn;

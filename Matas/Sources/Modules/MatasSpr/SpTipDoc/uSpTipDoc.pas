@@ -125,6 +125,7 @@ type
     N1: TMenuItem;
     TipDocDataSetTIP_WORK: TFIBIntegerField;
     ForFIO: TpFIBDataSet;
+    TipDocDataSetCHECK_DATE_POLUCH: TFIBIntegerField;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure CancelButtonClick(Sender: TObject);
     procedure cxDBTreeList1Click(Sender: TObject);
@@ -347,7 +348,7 @@ begin
   if T.cxCheckWorkPos.Checked then prop:=prop+';1' else prop:=prop+';0';
   if T.cxKodD.Text='' then
    T.cxKodD.Text:='0';
-  SetLength(Vals, 13);
+  SetLength(Vals, 14);
   Vals[ 0] := TipGrpDataSetID_TIPD_GRP.AsInteger;
   Vals[ 1] := T.cxKodD.Text;
   Vals[ 2] := T.cxTipd.Text;
@@ -361,6 +362,10 @@ begin
   Vals[10] := T.cxReport.ItemIndex;
   Vals[11] := T.ID_MO_IN;
   Vals[12] := T.ID_MO_OUT;
+  if T.cxDatePoluch.Checked then
+    Vals[13] := 1
+  else
+    Vals[13] := 0;
   try
     WorkStoredProc.Transaction := WriteTransaction;
     WorkStoredProc.Transaction.StartTransaction;
@@ -409,6 +414,7 @@ begin
  prop:=TipDocDataSet.FieldByName('PROPERTIES').AsString;
  T.cxOperInv.ItemIndex:=TipDocDataSet.FieldByName('ID_INV_OPER').AsInteger;
  T.cxOperMna.ItemIndex:=TipDocDataSet.FieldByName('ID_MNA_OPER').AsInteger;
+ T.cxDatePoluch.Checked := TipDocDataSet.FieldByName('CHECK_DATE_POLUCH').AsInteger = 1;
  if (prop[1] in ['0', '1', '2']) then
   nt:=StrToInt(prop[1])
  else
@@ -474,7 +480,7 @@ begin
   if T.cxKodD.Text='' then
    T.cxKodD.Text:='0';
   prop:=prop+';'+IntToStr(T.cxPosMode.ItemIndex);
-  SetLength(Vals, 13);
+  SetLength(Vals, 14);
   Vals[ 0] := id;
   Vals[ 1] := T.cxKodD.Text;
   Vals[ 2] := T.cxTipd.Text;
@@ -488,6 +494,10 @@ begin
   Vals[10] := T.cxReport.ItemIndex;
   Vals[11] := T.ID_MO_IN;
   Vals[12] := T.ID_MO_OUT;
+  if T.cxDatePoluch.Checked then
+    Vals[13] := 1
+  else
+    Vals[13] := 0;
   try
     WorkStoredProc.Transaction := WriteTransaction;
     WorkStoredProc.Transaction.StartTransaction;

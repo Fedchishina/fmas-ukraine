@@ -202,6 +202,8 @@ type
     WorkQuery: TpFIBQuery;
     pm1: TPopupMenu;
     N3: TMenuItem;
+    cxDBTextEdit1: TcxDBTextEdit;
+    DocOstDataSetDATE_POLUCH: TFIBDateField;
     procedure CancelButtonClick(Sender: TObject);
     procedure cxMatOtvPropertiesButtonClick(Sender: TObject;
       AButtonIndex: Integer);

@@ -60,6 +60,8 @@ type
     cxMonthEnd: TcxComboBox;
     cxYearEnd: TcxSpinEdit;
     cxDates: TcxCheckBox;
+    lblNASetting: TLabel;
+    cxNASetting: TcxComboBox;
     procedure OkButtonClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure CancelButtonClick(Sender: TObject);
@@ -74,6 +76,7 @@ type
     procedure ActionOkExecute(Sender: TObject);
     procedure actShablonExecute(Sender: TObject);
     procedure actShPrintExecute(Sender: TObject);
+    procedure cxReportPropertiesChange(Sender: TObject);
   private
     { Private declarations }
    DBHANDLE : TISC_DB_HANDLE;
@@ -262,6 +265,10 @@ begin
    end;
 }
    Add('SELECT * FROM MAT_MAKE_INV_VED_FULL_EX(:PDATE, :PID_MO, :PID_SCH, :PBAL_ID_SCH)');
+   if cxNASetting.ItemIndex = 1 then
+     Add(' WHERE OST_PRICE = 0 ');
+   if cxNASetting.ItemIndex = 2 then
+     Add(' WHERE OST_PRICE <> 0 ');
    Add('ORDER BY ID_MO, GROUP_SCH_NUMBER, NAME, ID_OST, INVNOM, NUM_BSO');
   end;
   ReportDataSet.Prepare;
@@ -376,6 +383,7 @@ begin
  cxCheckOnPrinter.Checked:=IntToBool(_SET_PRINT_ON_PRINTER);
  cxCheckBox1.Visible := IntToBool(_ALLOW_EDIT_TEMPLATE);
  WorkTransaction.StartTransaction;
+ cxNASetting.ItemIndex :=0;
 end;
 
 procedure TInvRepForm.cxMatOtvPropertiesButtonClick(Sender: TObject;
@@ -494,6 +502,21 @@ begin
     end;
     ds_vibor.next;
   end;
+end;
+
+procedure TInvRepForm.cxReportPropertiesChange(Sender: TObject);
+begin
+if (aReports[cxReport.ItemIndex][1] = 40) or
+  (aReports[cxReport.ItemIndex][1] = 50)then
+begin
+  cxNASetting.Enabled:=True;
+  lblNASetting.Enabled :=True;
+end
+else
+begin
+  cxNASetting.Enabled:=False;
+  lblNASetting.Enabled :=False;
+end;
 end;
 
 end.

@@ -1,6 +1,6 @@
 object fmInvKartAdd: TfmInvKartAdd
-  Left = 323
-  Top = 300
+  Left = 244
+  Top = 218
   HorzScrollBar.Color = 16776176
   HorzScrollBar.ParentColor = False
   VertScrollBar.Color = 16776176

@@ -410,7 +410,7 @@ type
     KEY_SESSION: int64;
     CLEAR_BUFFERS: boolean;
     SUMM_BY_DOG: Extended;
-    n_st, is_istfin:Integer;
+    n_st, is_istfin, istfin_sch:Integer;
     constructor Create(AOwner:TComponent; DBHANDLE : TISC_DB_HANDLE; ID_USER : Int64; ID_DOC: integer; DATE_DOC: TDateTime; ID_OPER: integer; WORK_PERIOD: TDateTime; aWorkMode: integer);overload;
   end;
 
@@ -1021,328 +1021,405 @@ begin
               'summa='+VarToStr(res.summa)+chr(13)+chr(10)+
               'dog_note='+VarToStr(res.dog_note)+chr(13)+chr(10)+s);
 }
- //сюда!!
- if  High(res.Smets) > 0 then
+ // обработка смет
+ // если смет больше 1, то пердлагаем ручной режим разноски
+  if  High(res.Smets) > 0 then
   begin
-  if agMessageDlg(MAT_STR_WARNING, 'Бажаєте автоматично додати джерела фінансування?', mtConfirmation, [mbYes, mbNo]) = ID_NO then
-  begin
-//  RXMemoryData.ClearFields;
-  RXMemoryData.Close;
-  RxMemoryData.FieldDefs.Clear;
-  RxMemoryData.FieldDefs.Add('ID_SCH', ftInteger, 0, True);
-  RxMemoryData.FieldDefs.Add('SCH_TITLE', ftSTRING, 20, True);
-  RxMemoryData.FieldDefs.Add('SCH_NUMBER', ftstring, 20, True);
+    if agMessageDlg(MAT_STR_WARNING, 'Бажаєте автоматично додати джерела фінансування?', mtConfirmation, [mbYes, mbNo]) = ID_NO then
+    begin
+      // разносим вручную: istfin_sch : 0 - по позициям, 1 - по счетам
+      istfin_sch := 0; 
+      if agMessageDlg(MAT_STR_WARNING, 'Додати джерала фінансування за позиціями документа?'+#13#10+'У разі відмови буде надана форма додавання джерел фінансування за рахунками документа.', mtConfirmation, [mbYes, mbNo]) = ID_NO then
+        istfin_sch:=1;
+      
+      RXMemoryData.Close;
+      RxMemoryData.FieldDefs.Clear;
+      // создаем поля - счет или позиция
+      if istfin_sch = 1 then
+      begin
+        RxMemoryData.FieldDefs.Add('ID_SCH', ftInteger, 0, True);
+        RxMemoryData.FieldDefs.Add('SCH_TITLE', ftSTRING, 20, True);
+        RxMemoryData.FieldDefs.Add('SCH_NUMBER', ftstring, 20, True);
+      end
+      else
+      begin
+        RxMemoryData.FieldDefs.Add('ID_POS', ftInteger, 0, True);
+        RxMemoryData.FieldDefs.Add('NAME_POS', ftSTRING, 100, True);
+        RxMemoryData.FieldDefs.Add('SCH_NUMBER', ftstring, 20, True);
+      end; 
+      // идем по всем сметам и добавляем поля
+      for i:=0 to High(res.Smets) do
+      begin
+        Zapros.Close;
+        Zapros.SQLs.SelectSQL.Clear;
+        Zapros.SQLs.SelectSQL.Add('SELECT RAZD_ST_NUM FROM PUB_SPR_RAZD_ST WHERE ID_RAZD_ST = :ST');
+        Zapros.ParamByName('ST').AsInt64:= res.Smets[i].NumStat;
+        Zapros.Open;
+      
+        n_st:=Zapros['RAZD_ST_NUM'];
+        // статьи НДС не учавствуют
+        if  n_st<>_NDS_ST then
+          RxMemoryData.FieldDefs.Add('R_'+VarToStr(res.Smets[i].NumRazd)+'_Sm_'+VarToStr(res.Smets[i].NumSmeta)+'_St_'+VarToStr(res.Smets[i].NumStat)+'_Kekv_'+VarToStr(res.Smets[i].NumKekv), ftInteger, 0, True);
+      end;
+      
+      PosProvDataSet.Open;
+      PosProvDataSet.First;
+      RXMemoryData.Open;
+      // заполняем RxMemoryData данными
+      while not PosProvDataSet.Eof do
+      begin
+        if istfin_sch = 1 then
+        begin
+          if not RxMemoryData.Locate('SCH_NUMBER', PosProvDataSet['DB_SCH_NUMBER'],[loCaseInsensitive]) then
+          begin
+            RxMemoryData.Append;
+            rxMemoryData.FieldByName('SCH_NUMBER').AsString:= PosProvDataSet['DB_SCH_NUMBER'];
+            RxMemoryData.FieldByName('SCH_TITLE').AsString:=PosProvDataSet['DB_SCH_TITLE'];
+            RxMemoryData.FieldByName('ID_SCH').value:=PosProvDataSet['DB_ID_SCH'];
+          
+            for i:=0 to High(res.Smets) do
+            begin
+              Zapros.Close;
+              Zapros.SQLs.SelectSQL.Clear;
+              Zapros.SQLs.SelectSQL.Add('SELECT RAZD_ST_NUM FROM PUB_SPR_RAZD_ST WHERE ID_RAZD_ST = :ST');
+              Zapros.ParamByName('ST').AsInt64:= res.Smets[i].NumStat;
+              Zapros.Open;
+              n_st:=Zapros['RAZD_ST_NUM'];
+              if  n_st<>_NDS_ST then
+                RxMemoryData.FieldByName('R_'+VarToStr(res.Smets[i].NumRazd)+'_Sm_'+VarToStr(res.Smets[i].NumSmeta)+'_St_'+VarToStr(res.Smets[i].NumStat)+'_Kekv_'+VarToStr(res.Smets[i].NumKekv)).value:=0;
+            end;
+          
+            RxMemoryData.Post;
+          end;
+        end
+        else
+        begin
+          if (not RxMemoryData.Locate('ID_POS', PosProvDataSet['ID_POS'],[loCaseInsensitive])) then
+          begin
+            RxMemoryData.Append;
+            rxMemoryData.FieldByName('ID_POS').Value:= PosProvDataSet['ID_POS'];
+            RxMemoryData.FieldByName('NAME_POS').AsString:=PosProvDataSet['NAME'];
+            rxMemoryData.FieldByName('SCH_NUMBER').AsString:= PosProvDataSet['DB_SCH_NUMBER'];
+                      
+            for i:=0 to High(res.Smets) do
+            begin
+              Zapros.Close;
+              Zapros.SQLs.SelectSQL.Clear;
+              Zapros.SQLs.SelectSQL.Add('SELECT RAZD_ST_NUM FROM PUB_SPR_RAZD_ST WHERE ID_RAZD_ST = :ST');
+              Zapros.ParamByName('ST').AsInt64:= res.Smets[i].NumStat;
+              Zapros.Open;
+              n_st:=Zapros['RAZD_ST_NUM'];
+              if  n_st<>_NDS_ST then
+                RxMemoryData.FieldByName('R_'+VarToStr(res.Smets[i].NumRazd)+'_Sm_'+VarToStr(res.Smets[i].NumSmeta)+'_St_'+VarToStr(res.Smets[i].NumStat)+'_Kekv_'+VarToStr(res.Smets[i].NumKekv)).value:=0;
+            end;
+          
+            RxMemoryData.Post;
+          end;
+        end;
+ 
+        PosProvDataSet.Next;
+      end;
+      // показываем форму
+      probform:=TDocWorkSchKekvForm.Create(self);
+      if istfin_sch = 1 then
+      begin
+        probform.ID_SCH.DataBinding.FieldName:='ID_SCH';
+        probform.SCH_TITLE.DataBinding.FieldName:='SCH_TITLE';
+        probform.SCH_NUMBER.DataBinding.FieldName:='SCH_NUMBER';
+
+        probform.NAME_POS.Visible := False;
+        probform.SCH_NUMBER.Visible := True;
+      end
+      else
+      begin
+        probform.ID_POS.DataBinding.FieldName:='ID_POS';
+        probform.NAME_POS.DataBinding.FieldName:='NAME_POS';
+        probform.SCH_NUMBER.DataBinding.FieldName:='SCH_NUMBER';
+
+        probform.NAME_POS.Visible := True;
+        probform.SCH_NUMBER.Visible := True;
+      end;
+
+      for i:=0 to High(res.Smets) do
+      begin
+        Zapros.Close;
+        Zapros.SQLs.SelectSQL.Clear;
+        Zapros.SQLs.SelectSQL.Add('SELECT RAZD_ST_NUM FROM PUB_SPR_RAZD_ST WHERE ID_RAZD_ST = :ST');
+        Zapros.ParamByName('ST').AsInt64:= res.Smets[i].NumStat;
+        Zapros.Open;
+        n_st:=Zapros['RAZD_ST_NUM'];
+       
+        if  n_st<>_NDS_ST then
+        begin
+          Zapros.Close;
+          Zapros.SQLs.SelectSQL.Clear;
+          Zapros.SQLs.SelectSQL.Add('SELECT RAZD_ST_NUM FROM PUB_SPR_RAZD_ST WHERE ID_RAZD_ST = :RAZD');
+          Zapros.ParamByName('RAZD').AsInt64:= res.Smets[i].NumRazd;
+          Zapros.Open;
+          razdel:=Zapros['RAZD_ST_NUM'];
+
+          Zapros.Close;
+          Zapros.SQLs.SelectSQL.Clear;
+          Zapros.SQLs.SelectSQL.Add('SELECT SMETA_KOD FROM PUB_SPR_SMETA WHERE ID_SMETA = :SMETA');
+          Zapros.ParamByName('SMETA').AsInt64:= res.Smets[i].NumSmeta;
+          Zapros.Open;
+          smeta:=Zapros['SMETA_KOD'];
+
+          Zapros.Close;
+          Zapros.SQLs.SelectSQL.Clear;
+          Zapros.SQLs.SelectSQL.Add('SELECT KEKV_KODE FROM PUB_SPR_KEKV WHERE ID_KEKV = :KEKV');
+          Zapros.ParamByName('KEKV').AsInt64:= res.Smets[i].NumKekv;
+          Zapros.Open;
+          kekv:=Zapros['KEKV_KODE'];
+
+          probform.cxGridPosDBTableView1.Columns[i+5].Caption:= VarToStr(smeta)+ '/'+ VarToStr(razdel) + '/' + IntToStr(n_st)+'/'+VarToStr(kekv);
+          probform.cxGridPosDBTableView1.Columns[i+5].DataBinding.FieldName:= 'R_'+VarToStr(res.Smets[i].NumRazd)+'_Sm_'+VarToStr(res.Smets[i].NumSmeta)+'_St_'+VarToStr(res.Smets[i].NumStat)+'_Kekv_'+VarToStr(res.Smets[i].NumKekv);
+          probform.cxGridPosDBTableView1.Columns[i+5].Visible:=True;
+        end;
+      end;
+
+      probform.ShowModal;
+      
+      if probform.ModalResult = mrOk then
+      begin
+        for i:=0 to High(res.Smets) do
+        begin
+          Zapros.Close;
+          Zapros.SQLs.SelectSQL.Clear;
+          Zapros.SQLs.SelectSQL.Add('SELECT RAZD_ST_NUM FROM PUB_SPR_RAZD_ST WHERE ID_RAZD_ST = :ST');
+          Zapros.ParamByName('ST').AsInt64:= res.Smets[i].NumStat;
+          Zapros.Open;
+          n_st:=Zapros['RAZD_ST_NUM'];
+          if  n_st=_NDS_ST then
+          begin
+            SetLength(Vals, 10);
+            Vals[0]  := ID_DOC;
+            Vals[1]  := 0;
+            Vals[2]  := VarToStr(res.Smets[i].NumSmeta);
+            Vals[3]  := VarToStr(res.Smets[i].NumRazd);
+            Vals[4]  := VarToStr(res.Smets[i].NumStat);
+            Vals[5]  := VarToStr(res.Smets[i].NumKekv);
+            Vals[6]  := VarToStr(res.id_dog);
+            Vals[7]  := VarToStr(res.kod_dog);
+            Vals[8]  := cur_summa;
+            Vals[9]  := VarToStr(res.Smets[i].NSumma);
+       
+            try
+              StoredProc.Close;
+              StoredProc.Transaction := WriteTransaction;
+              StoredProc.Transaction.StartTransaction;
+              StoredProc.StoredProcName:='MAT_DT_DOC_PROV_INTF_ADD';
+              StoredProc.Prepare;
+              StoredProc.ExecProcedure('MAT_DT_DOC_PROV_INTF_ADD', vals);
+              StoredProc.Transaction.Commit;
+              SUMM_BY_DOG:=SUMM_BY_DOG+res.Smets[i].NSumma;
+            except on E : Exception
+            do begin
+              ShowMessage(E.Message);
+              StoredProc.Transaction.Rollback;
+            end;
+          end;
+        end;
+      end;
+      // ? получается, что в любом случае разбиваем?
+      RXMemoryData.Open;
+      RXMemoryData.first;
+      summa_1:=0;
+      
+      while not RXMemoryData.Eof do
+      begin
+        for i:=0 to High(res.Smets) do
+        begin
+          Zapros.Close;
+          Zapros.SQLs.SelectSQL.Clear;
+          Zapros.SQLs.SelectSQL.Add('SELECT RAZD_ST_NUM FROM PUB_SPR_RAZD_ST WHERE ID_RAZD_ST = :ST');
+          Zapros.ParamByName('ST').AsInt64:= res.Smets[i].NumStat;
+          Zapros.Open;
+          n_st:=Zapros['RAZD_ST_NUM'];
+          
+          if  n_st<>_NDS_ST then
+            if  RXMemoryData.FieldByName('R_'+VarToStr(res.Smets[i].NumRazd)+'_Sm_'+VarToStr(res.Smets[i].NumSmeta)+'_St_'+VarToStr(res.Smets[i].NumStat)+'_Kekv_'+VarToStr(res.Smets[i].NumKekv)).value = 1 then
+            begin
+              summa_1  :=summa_1+ StrToFloat(VarToStr(res.Smets[i].NSumma));
+            end;
+        end;
+        RXMemoryData.Next;
+      end;
+
+      RXMemoryData.Open;
+      RXMemoryData.first;
+      while not RXMemoryData.Eof do
+      begin
+        for i:=0 to High(res.Smets) do
+        begin
+          Zapros.Close;
+          Zapros.SQLs.SelectSQL.Clear;
+          Zapros.SQLs.SelectSQL.Add('SELECT RAZD_ST_NUM FROM PUB_SPR_RAZD_ST WHERE ID_RAZD_ST = :ST');
+          Zapros.ParamByName('ST').AsInt64:= res.Smets[i].NumStat;
+          Zapros.Open;
+          n_st:=Zapros['RAZD_ST_NUM'];
+         
+          if  n_st<>_NDS_ST then
+            if  RXMemoryData.FieldByName('R_'+VarToStr(res.Smets[i].NumRazd)+'_Sm_'+VarToStr(res.Smets[i].NumSmeta)+'_St_'+VarToStr(res.Smets[i].NumStat)+'_Kekv_'+VarToStr(res.Smets[i].NumKekv)).value = 1 then
+            begin
+              if istfin_sch = 1 then
+                SetLength(Vals, 11)
+              else
+                SetLength(Vals, 10);
+              Vals[0]  := ID_DOC;
+              if istfin_sch = 1 then
+                Vals[1]  := 0
+              else
+                Vals[1]  := VarToStr(RxMemoryData.FieldByName('ID_POS').value);
+
+              Vals[2]  := VarToStr(res.Smets[i].NumSmeta);
+              Vals[3]  := VarToStr(res.Smets[i].NumRazd);
+              Vals[4]  := VarToStr(res.Smets[i].NumStat);
+              Vals[5]  := VarToStr(res.Smets[i].NumKekv);
+              Vals[6]  := VarToStr(res.id_dog);
+              Vals[7]  := VarToStr(res.kod_dog);
+              Vals[8]  := cur_summa;
+              Vals[9]  := VarToStr(res.Smets[i].NSumma);
+              
+              if istfin_sch = 1 then
+                Vals[10] := RxMemoryData.FieldByName('ID_SCH').value;
+            
+              try
+                StoredProc.Close;
+                StoredProc.Transaction := WriteTransaction;
+                StoredProc.Transaction.StartTransaction;
+                if istfin_sch = 1 then
+                  StoredProc.StoredProcName:='MAT_DT_DOC_PROV_INTF_ADD_2'
+                else
+                  StoredProc.StoredProcName:='MAT_DT_DOC_PROV_INTF_ADD_3';
+                StoredProc.Prepare;
+                if istfin_sch = 1 then 
+                  StoredProc.ExecProcedure('MAT_DT_DOC_PROV_INTF_ADD_2', vals)
+                else
+                  StoredProc.ExecProcedure('MAT_DT_DOC_PROV_INTF_ADD_3', vals);
+                StoredProc.Transaction.Commit;
+                SUMM_BY_DOG:=SUMM_BY_DOG+res.Smets[i].NSumma;
+             except on E : Exception
+             do begin
+               ShowMessage(E.Message);
+               StoredProc.Transaction.Rollback;
+             end;
+           end;
+         end;
+       end;
+     //RXMemoryData.Post;
+       RXMemoryData.Next;
+     end;
+   end;
+ end
+ else
+   begin
+     for i:=0 to High(res.Smets) do
+     begin
+       SetLength(Vals, 10);
+       Vals[0]  := ID_DOC;
+       Vals[1]  := 0;
+       Vals[2]  := VarToStr(res.Smets[i].NumSmeta);
+       Vals[3]  := VarToStr(res.Smets[i].NumRazd);
+       Vals[4]  := VarToStr(res.Smets[i].NumStat);
+       Vals[5]  := VarToStr(res.Smets[i].NumKekv);
+       Vals[6]  := VarToStr(res.id_dog);
+       Vals[7]  := VarToStr(res.kod_dog);
+       Vals[8]  := cur_summa;
+       Vals[9]  := VarToStr(res.Smets[i].NSumma);
+       try
+         StoredProc.Close;
+         StoredProc.Transaction := WriteTransaction;
+         StoredProc.Transaction.StartTransaction;
+         StoredProc.StoredProcName:='MAT_DT_DOC_PROV_INTF_ADD';
+         StoredProc.Prepare;
+         StoredProc.ExecProcedure('MAT_DT_DOC_PROV_INTF_ADD', vals);
+    {    StoredProc.ParamByName('PID_DOC').AsInt64:=ID_DOC;
+         StoredProc.ParamByName('PID_POS').AsInt64:=0;
+         StoredProc.ParamByName('PID_SM').AsString:=VarToStr(res.Smets[i].NumSmeta);
+         StoredProc.ParamByName('PID_RZ').AsString:=VarToStr(res.Smets[i].NumRazd);
+         StoredProc.ParamByName('PID_ST').AsString:=VarToStr(res.Smets[i].NumStat);
+         StoredProc.ParamByName('PID_KEKV').AsString:=VarToStr(res.Smets[i].NumKekv);
+         StoredProc.ParamByName('PID_DOG').AsString:=VarToStr(res.id_dog);
+         StoredProc.ParamByName('PKOD_DOG').AsString:=VarToStr(res.kod_dog);
+         StoredProc.ParamByName('PISUMMA').Value:=cur_summa;
+         StoredProc.ParamByName('PSUMMA').Value:=VarToStr(res.Smets[i].NSumma);
+         StoredProc.ExecProc;
+    }
+         StoredProc.Transaction.Commit;
+         SUMM_BY_DOG:=SUMM_BY_DOG+res.Smets[i].NSumma;
+         except on E : Exception
+         do begin
+           ShowMessage(E.Message);
+           StoredProc.Transaction.Rollback;
+         end;
+       end;
+  //   ShowMessage('добавлена '+inttostr(i)+' из' +inttostr(High(res.Smets))+' сумма'+floattostr(res.Smets[i].NSumma));
+     end;
+   end;
+ end
+else
+ begin
   for i:=0 to High(res.Smets) do
   begin
-  //  showmessage(inttostr(res.Smets[i].NumStat)+' '+inttostr(_NDS_ST));
-   Zapros.Close;
-   Zapros.SQLs.SelectSQL.Clear;
-   Zapros.SQLs.SelectSQL.Add('SELECT RAZD_ST_NUM FROM PUB_SPR_RAZD_ST WHERE ID_RAZD_ST = :ST');
-   Zapros.ParamByName('ST').AsInt64:= res.Smets[i].NumStat;
-   Zapros.Open;
-   n_st:=Zapros['RAZD_ST_NUM'];
-//   showmessage(inttostr(n_st)+' '+inttostr(_NDS_ST));
-  if  n_st<>_NDS_ST then
-    RxMemoryData.FieldDefs.Add('R_'+VarToStr(res.Smets[i].NumRazd)+'_Sm_'+VarToStr(res.Smets[i].NumSmeta)+'_St_'+VarToStr(res.Smets[i].NumStat)+'_Kekv_'+VarToStr(res.Smets[i].NumKekv), ftInteger, 0, True);
-  end;
- //RxMemoryData.FieldDefs.Add('Kekv_'+VarToStr(res.Smets[i].NumKekv), ftInteger, 0, True);
+    SetLength(Vals, 10);
+    Vals[0]  := ID_DOC;
+    Vals[1]  := 0;
+    Vals[2]  := VarToStr(res.Smets[i].NumSmeta);
+    Vals[3]  := VarToStr(res.Smets[i].NumRazd);
+    Vals[4]  := VarToStr(res.Smets[i].NumStat);
+    Vals[5]  := VarToStr(res.Smets[i].NumKekv);
+    Vals[6]  := VarToStr(res.id_dog);
+    Vals[7]  := VarToStr(res.kod_dog);
+    Vals[8]  := cur_summa;
+    Vals[9]  := VarToStr(res.Smets[i].NSumma);
 
-  PosProvDataSet.Open;
-  RXMemoryData.Open;
- while not PosProvDataSet.Eof do
-  begin
-  if not RxMemoryData.Locate('SCH_NUMBER', PosProvDataSet['DB_SCH_NUMBER'],[loCaseInsensitive]) then
-   begin
-    RxMemoryData.Append;
-    rxMemoryData.FieldByName('SCH_NUMBER').AsString:= PosProvDataSet['DB_SCH_NUMBER'];
-    RxMemoryData.FieldByName('SCH_TITLE').AsString:=PosProvDataSet['DB_SCH_TITLE'];
-    RxMemoryData.FieldByName('ID_SCH').value:=PosProvDataSet['DB_ID_SCH'];
-    for i:=0 to High(res.Smets) do
-    begin
-    Zapros.Close;
-    Zapros.SQLs.SelectSQL.Clear;
-    Zapros.SQLs.SelectSQL.Add('SELECT RAZD_ST_NUM FROM PUB_SPR_RAZD_ST WHERE ID_RAZD_ST = :ST');
-    Zapros.ParamByName('ST').AsInt64:= res.Smets[i].NumStat;
-    Zapros.Open;
-    n_st:=Zapros['RAZD_ST_NUM'];
-    if  n_st<>_NDS_ST then
-     RxMemoryData.FieldByName('R_'+VarToStr(res.Smets[i].NumRazd)+'_Sm_'+VarToStr(res.Smets[i].NumSmeta)+'_St_'+VarToStr(res.Smets[i].NumStat)+'_Kekv_'+VarToStr(res.Smets[i].NumKekv)).value:=0;
-     end;
-     RxMemoryData.Post;
-   end;
-   PosProvDataSet.Next;
-  end;
-
- probform:=TDocWorkSchKekvForm.Create(self);
- probform.ID_SCH.DataBinding.FieldName:='ID_SCH';
- probform.SCH_TITLE.DataBinding.FieldName:='SCH_TITLE';
- probform.SCH_NUMBER.DataBinding.FieldName:='SCH_NUMBER';
- for i:=0 to High(res.Smets) do
-  begin
-    Zapros.Close;
-    Zapros.SQLs.SelectSQL.Clear;
-    Zapros.SQLs.SelectSQL.Add('SELECT RAZD_ST_NUM FROM PUB_SPR_RAZD_ST WHERE ID_RAZD_ST = :ST');
-    Zapros.ParamByName('ST').AsInt64:= res.Smets[i].NumStat;
-    Zapros.Open;
-    n_st:=Zapros['RAZD_ST_NUM'];
-  if  n_st<>_NDS_ST then
-   begin
-   Zapros.Close;
-   Zapros.SQLs.SelectSQL.Clear;
-   Zapros.SQLs.SelectSQL.Add('SELECT RAZD_ST_NUM FROM PUB_SPR_RAZD_ST WHERE ID_RAZD_ST = :RAZD');
-   Zapros.ParamByName('RAZD').AsInt64:= res.Smets[i].NumRazd;
-   Zapros.Open;
-   razdel:=Zapros['RAZD_ST_NUM'];
-
-   Zapros.Close;
-   Zapros.SQLs.SelectSQL.Clear;
-   Zapros.SQLs.SelectSQL.Add('SELECT SMETA_KOD FROM PUB_SPR_SMETA WHERE ID_SMETA = :SMETA');
-   Zapros.ParamByName('SMETA').AsInt64:= res.Smets[i].NumSmeta;
-   Zapros.Open;
-   smeta:=Zapros['SMETA_KOD'];
-
-    Zapros.Close;
-    Zapros.SQLs.SelectSQL.Clear;
-    Zapros.SQLs.SelectSQL.Add('SELECT KEKV_KODE FROM PUB_SPR_KEKV WHERE ID_KEKV = :KEKV');
-    Zapros.ParamByName('KEKV').AsInt64:= res.Smets[i].NumKekv;
-    Zapros.Open;
-    kekv:=Zapros['KEKV_KODE'];
-
-   probform.cxGridPosDBTableView1.Columns[i+3].Caption:= VarToStr(smeta)+ '/'+ VarToStr(razdel) + '/' + IntToStr(n_st)+'/'+VarToStr(kekv);
-   probform.cxGridPosDBTableView1.Columns[i+3].DataBinding.FieldName:= 'R_'+VarToStr(res.Smets[i].NumRazd)+'_Sm_'+VarToStr(res.Smets[i].NumSmeta)+'_St_'+VarToStr(res.Smets[i].NumStat)+'_Kekv_'+VarToStr(res.Smets[i].NumKekv);
-   probform.cxGridPosDBTableView1.Columns[i+3].Visible:=True;
-   end;
-  end;
-
- probform.ShowModal;
- if probform.ModalResult = mrOk then
-  begin
-   for i:=0 to High(res.Smets) do
-   begin
-    Zapros.Close;
-    Zapros.SQLs.SelectSQL.Clear;
-    Zapros.SQLs.SelectSQL.Add('SELECT RAZD_ST_NUM FROM PUB_SPR_RAZD_ST WHERE ID_RAZD_ST = :ST');
-    Zapros.ParamByName('ST').AsInt64:= res.Smets[i].NumStat;
-    Zapros.Open;
-    n_st:=Zapros['RAZD_ST_NUM'];
-    if  n_st=_NDS_ST then
-    begin
-     SetLength(Vals, 10);
-     Vals[0]  := ID_DOC;
-     Vals[1]  := 0;
-     Vals[2]  := VarToStr(res.Smets[i].NumSmeta);
-     Vals[3]  := VarToStr(res.Smets[i].NumRazd);
-     Vals[4]  := VarToStr(res.Smets[i].NumStat);
-     Vals[5]  := VarToStr(res.Smets[i].NumKekv);
-     Vals[6]  := VarToStr(res.id_dog);
-     Vals[7]  := VarToStr(res.kod_dog);
-     Vals[8]  := cur_summa;
-     Vals[9]  := VarToStr(res.Smets[i].NSumma);
-     try
-     
+    try
       StoredProc.Close;
       StoredProc.Transaction := WriteTransaction;
       StoredProc.Transaction.StartTransaction;
       StoredProc.StoredProcName:='MAT_DT_DOC_PROV_INTF_ADD';
       StoredProc.Prepare;
       StoredProc.ExecProcedure('MAT_DT_DOC_PROV_INTF_ADD', vals);
+{     StoredProc.ParamByName('PID_DOC').AsInt64:=ID_DOC;
+      StoredProc.ParamByName('PID_POS').AsInt64:=0;
+      StoredProc.ParamByName('PID_SM').AsString:=VarToStr(res.Smets[i].NumSmeta);
+      StoredProc.ParamByName('PID_RZ').AsString:=VarToStr(res.Smets[i].NumRazd);
+      StoredProc.ParamByName('PID_ST').AsString:=VarToStr(res.Smets[i].NumStat);
+      StoredProc.ParamByName('PID_KEKV').AsString:=VarToStr(res.Smets[i].NumKekv);
+      StoredProc.ParamByName('PID_DOG').AsString:=VarToStr(res.id_dog);
+      StoredProc.ParamByName('PKOD_DOG').AsString:=VarToStr(res.kod_dog);
+      StoredProc.ParamByName('PISUMMA').Value:=cur_summa;
+      StoredProc.ParamByName('PSUMMA').Value:=VarToStr(res.Smets[i].NSumma);
+      StoredProc.ExecProc;
+}
       StoredProc.Transaction.Commit;
       SUMM_BY_DOG:=SUMM_BY_DOG+res.Smets[i].NSumma;
-     except on E : Exception
-     do begin
-      ShowMessage(E.Message);
-      StoredProc.Transaction.Rollback;
-        end;
-     end;
-     end;
-   end;
-   //
-   RXMemoryData.Open;
-   RXMemoryData.first;
-   summa_1:=0;
-   while not RXMemoryData.Eof do
-    begin
-     for i:=0 to High(res.Smets) do
-      begin
-      Zapros.Close;
-      Zapros.SQLs.SelectSQL.Clear;
-      Zapros.SQLs.SelectSQL.Add('SELECT RAZD_ST_NUM FROM PUB_SPR_RAZD_ST WHERE ID_RAZD_ST = :ST');
-      Zapros.ParamByName('ST').AsInt64:= res.Smets[i].NumStat;
-      Zapros.Open;
-      n_st:=Zapros['RAZD_ST_NUM'];
-       if  n_st<>_NDS_ST then
-       if  RXMemoryData.FieldByName('R_'+VarToStr(res.Smets[i].NumRazd)+'_Sm_'+VarToStr(res.Smets[i].NumSmeta)+'_St_'+VarToStr(res.Smets[i].NumStat)+'_Kekv_'+VarToStr(res.Smets[i].NumKekv)).value = 1 then
-        begin
-
-         summa_1  :=summa_1+ StrToFloat(VarToStr(res.Smets[i].NSumma));
-
-        end;
-        end;
-  //  RXMemoryData.Post;
-     RXMemoryData.Next;
+      except on E : Exception
+      do begin
+        ShowMessage(E.Message);
+        StoredProc.Transaction.Rollback;
+      end;
     end;
-   //
-    //showmessage(FloatToStr(summa_1));
-   RXMemoryData.Open;
-   RXMemoryData.first;
-   while not RXMemoryData.Eof do
-    begin
-     for i:=0 to High(res.Smets) do
-      begin
-      Zapros.Close;
-      Zapros.SQLs.SelectSQL.Clear;
-      Zapros.SQLs.SelectSQL.Add('SELECT RAZD_ST_NUM FROM PUB_SPR_RAZD_ST WHERE ID_RAZD_ST = :ST');
-      Zapros.ParamByName('ST').AsInt64:= res.Smets[i].NumStat;
-      Zapros.Open;
-      n_st:=Zapros['RAZD_ST_NUM'];
-       if  n_st<>_NDS_ST then
-       if  RXMemoryData.FieldByName('R_'+VarToStr(res.Smets[i].NumRazd)+'_Sm_'+VarToStr(res.Smets[i].NumSmeta)+'_St_'+VarToStr(res.Smets[i].NumStat)+'_Kekv_'+VarToStr(res.Smets[i].NumKekv)).value = 1 then
-        begin
-         SetLength(Vals, 11);
-         Vals[0]  := ID_DOC;
-         Vals[1]  := 0;
-         Vals[2]  := VarToStr(res.Smets[i].NumSmeta);
-         Vals[3]  := VarToStr(res.Smets[i].NumRazd);
-         Vals[4]  := VarToStr(res.Smets[i].NumStat);
-         Vals[5]  := VarToStr(res.Smets[i].NumKekv);
-         Vals[6]  := VarToStr(res.id_dog);
-         Vals[7]  := VarToStr(res.kod_dog);
-         Vals[8]  := cur_summa;
-        //Vals[8]  :=summa_1;
-         Vals[9]  := VarToStr(res.Smets[i].NSumma);
-         Vals[10] := RxMemoryData.FieldByName('ID_SCH').value;
-         try
-          StoredProc.Close;
-          StoredProc.Transaction := WriteTransaction;
-          StoredProc.Transaction.StartTransaction;
-          StoredProc.StoredProcName:='MAT_DT_DOC_PROV_INTF_ADD_2';
-          StoredProc.Prepare;
-          StoredProc.ExecProcedure('MAT_DT_DOC_PROV_INTF_ADD_2', vals);
-          StoredProc.Transaction.Commit;
-          SUMM_BY_DOG:=SUMM_BY_DOG+res.Smets[i].NSumma;
-          except on E : Exception
-           do begin
-           ShowMessage(E.Message);
-           StoredProc.Transaction.Rollback;
-              end;
-         end;
-        end;
-        end;
-  //  RXMemoryData.Post;
-     RXMemoryData.Next;
-    end;
-  end;
-//  else RXMemoryData.ClearFields;
-
-  end
-  else
-    begin
-      for i:=0 to High(res.Smets) do
-  begin
-   SetLength(Vals, 10);
-   Vals[0]  := ID_DOC;
-   Vals[1]  := 0;
-   Vals[2]  := VarToStr(res.Smets[i].NumSmeta);
-   Vals[3]  := VarToStr(res.Smets[i].NumRazd);
-   Vals[4]  := VarToStr(res.Smets[i].NumStat);
-   Vals[5]  := VarToStr(res.Smets[i].NumKekv);
-   Vals[6]  := VarToStr(res.id_dog);
-   Vals[7]  := VarToStr(res.kod_dog);
-   Vals[8]  := cur_summa;
-   Vals[9]  := VarToStr(res.Smets[i].NSumma);
-        
-   try
-    StoredProc.Close;
-    StoredProc.Transaction := WriteTransaction;
-    StoredProc.Transaction.StartTransaction;
-    StoredProc.StoredProcName:='MAT_DT_DOC_PROV_INTF_ADD';
-    StoredProc.Prepare;
-    StoredProc.ExecProcedure('MAT_DT_DOC_PROV_INTF_ADD', vals);
-{    StoredProc.ParamByName('PID_DOC').AsInt64:=ID_DOC;
-    StoredProc.ParamByName('PID_POS').AsInt64:=0;
-    StoredProc.ParamByName('PID_SM').AsString:=VarToStr(res.Smets[i].NumSmeta);
-    StoredProc.ParamByName('PID_RZ').AsString:=VarToStr(res.Smets[i].NumRazd);
-    StoredProc.ParamByName('PID_ST').AsString:=VarToStr(res.Smets[i].NumStat);
-    StoredProc.ParamByName('PID_KEKV').AsString:=VarToStr(res.Smets[i].NumKekv);
-    StoredProc.ParamByName('PID_DOG').AsString:=VarToStr(res.id_dog);
-    StoredProc.ParamByName('PKOD_DOG').AsString:=VarToStr(res.kod_dog);
-    StoredProc.ParamByName('PISUMMA').Value:=cur_summa;
-    StoredProc.ParamByName('PSUMMA').Value:=VarToStr(res.Smets[i].NSumma);
-    StoredProc.ExecProc;
-}
-    StoredProc.Transaction.Commit;
-    SUMM_BY_DOG:=SUMM_BY_DOG+res.Smets[i].NSumma;
-   except on E : Exception
-    do begin
-      ShowMessage(E.Message);
-      StoredProc.Transaction.Rollback;
-     end;
-   end;
-  //   ShowMessage('добавлена '+inttostr(i)+' из' +inttostr(High(res.Smets))+' сумма'+floattostr(res.Smets[i].NSumma));
-  end;
-    end;
- end
-else
- begin
-  for i:=0 to High(res.Smets) do
-  begin
-   SetLength(Vals, 10);
-   Vals[0]  := ID_DOC;
-   Vals[1]  := 0;
-   Vals[2]  := VarToStr(res.Smets[i].NumSmeta);
-   Vals[3]  := VarToStr(res.Smets[i].NumRazd);
-   Vals[4]  := VarToStr(res.Smets[i].NumStat);
-   Vals[5]  := VarToStr(res.Smets[i].NumKekv);
-   Vals[6]  := VarToStr(res.id_dog);
-   Vals[7]  := VarToStr(res.kod_dog);
-   Vals[8]  := cur_summa;
-   Vals[9]  := VarToStr(res.Smets[i].NSumma);
-
-   try
-    StoredProc.Close;
-    StoredProc.Transaction := WriteTransaction;
-    StoredProc.Transaction.StartTransaction;
-    StoredProc.StoredProcName:='MAT_DT_DOC_PROV_INTF_ADD';
-    StoredProc.Prepare;
-    StoredProc.ExecProcedure('MAT_DT_DOC_PROV_INTF_ADD', vals);
-{    StoredProc.ParamByName('PID_DOC').AsInt64:=ID_DOC;
-    StoredProc.ParamByName('PID_POS').AsInt64:=0;
-    StoredProc.ParamByName('PID_SM').AsString:=VarToStr(res.Smets[i].NumSmeta);
-    StoredProc.ParamByName('PID_RZ').AsString:=VarToStr(res.Smets[i].NumRazd);
-    StoredProc.ParamByName('PID_ST').AsString:=VarToStr(res.Smets[i].NumStat);
-    StoredProc.ParamByName('PID_KEKV').AsString:=VarToStr(res.Smets[i].NumKekv);
-    StoredProc.ParamByName('PID_DOG').AsString:=VarToStr(res.id_dog);
-    StoredProc.ParamByName('PKOD_DOG').AsString:=VarToStr(res.kod_dog);
-    StoredProc.ParamByName('PISUMMA').Value:=cur_summa;
-    StoredProc.ParamByName('PSUMMA').Value:=VarToStr(res.Smets[i].NSumma);
-    StoredProc.ExecProc;
-}
-    StoredProc.Transaction.Commit;
-    SUMM_BY_DOG:=SUMM_BY_DOG+res.Smets[i].NSumma;
-   except on E : Exception
-    do begin
-      ShowMessage(E.Message);
-      StoredProc.Transaction.Rollback;
-     end;
-   end;
   //   ShowMessage('добавлена '+inttostr(i)+' из' +inttostr(High(res.Smets))+' сумма'+floattostr(res.Smets[i].NSumma));
   end;
 end;
+
   if FULL_SUMMA<=SUMM_BY_DOG then
   begin
    // проверяем округления по позициям
-   try
-    StoredProc.Close;
-    StoredProc.Transaction := WriteTransaction;
-    StoredProc.Transaction.StartTransaction;
-    StoredProc.StoredProcName:='MAT_DT_DOC_PROV_INTF_ROUND_POS';
-    StoredProc.Prepare;
-    StoredProc.ExecProcedure('MAT_DT_DOC_PROV_INTF_ROUND_POS', [ID_DOC]);
-    StoredProc.Transaction.Commit;
-   except on E : Exception
-    do begin
-      ShowMessage(E.Message);
-      StoredProc.Transaction.Rollback;
+    try
+      StoredProc.Close;
+      StoredProc.Transaction := WriteTransaction;
+      StoredProc.Transaction.StartTransaction;
+      StoredProc.StoredProcName:='MAT_DT_DOC_PROV_INTF_ROUND_POS';
+      StoredProc.Prepare;
+      StoredProc.ExecProcedure('MAT_DT_DOC_PROV_INTF_ROUND_POS', [ID_DOC]);
+      StoredProc.Transaction.Commit;
+      except on E : Exception
+      do begin
+        ShowMessage(E.Message);
+        StoredProc.Transaction.Rollback;
      end;
    end;
 

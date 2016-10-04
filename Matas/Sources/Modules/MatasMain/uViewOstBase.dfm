@@ -1,10 +1,10 @@
 object OstBaseForm: TOstBaseForm
-  Left = 288
-  Top = 222
+  Left = 100
+  Top = 18
   BorderStyle = bsDialog
   Caption = '1'
   ClientHeight = 473
-  ClientWidth = 736
+  ClientWidth = 949
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -22,7 +22,7 @@ object OstBaseForm: TOstBaseForm
   object cxGrid1: TcxGrid
     Left = 0
     Top = 63
-    Width = 736
+    Width = 949
     Height = 318
     Align = alClient
     PopupMenu = PopupMenu1
@@ -176,6 +176,30 @@ object OstBaseForm: TOstBaseForm
         Visible = False
         DataBinding.FieldName = 'PRIZNAK'
       end
+      object cxGrid1Gruppa4: TcxGridDBColumn
+        Caption = #1043#1088#1091#1087#1087#1072' 4'
+        Visible = False
+        Width = 20
+        DataBinding.FieldName = 'GROUP_4'
+      end
+      object cxGrid1Gruppa3: TcxGridDBColumn
+        Caption = #1043#1088#1091#1087#1087#1072' 3'
+        Visible = False
+        Width = 20
+        DataBinding.FieldName = 'GROUP_3'
+      end
+      object cxGrid1Gruppa2: TcxGridDBColumn
+        Caption = #1043#1088#1091#1087#1087#1072' 2'
+        Visible = False
+        Width = 20
+        DataBinding.FieldName = 'GROUP_2'
+      end
+      object cxGrid1Gruppa1: TcxGridDBColumn
+        Caption = #1043#1088#1091#1087#1087#1072' 1'
+        Visible = False
+        Width = 20
+        DataBinding.FieldName = 'GROUP_1'
+      end
     end
     object cxGrid1Level1: TcxGridLevel
       GridView = cxGrid1DBTableView1
@@ -184,7 +208,7 @@ object OstBaseForm: TOstBaseForm
   object PanelInfo: TPanel
     Left = 0
     Top = 389
-    Width = 736
+    Width = 949
     Height = 84
     Align = alBottom
     Ctl3D = True
@@ -217,7 +241,7 @@ object OstBaseForm: TOstBaseForm
       ParentFont = False
     end
     object cxGrid2: TcxGrid
-      Left = 434
+      Left = 647
       Top = 1
       Width = 301
       Height = 82
@@ -312,7 +336,7 @@ object OstBaseForm: TOstBaseForm
       end
     end
     object cxDBTextEdit2: TcxDBTextEdit
-      Left = 16
+      Left = 7
       Top = 8
       Width = 81
       Height = 21
@@ -328,7 +352,7 @@ object OstBaseForm: TOstBaseForm
       TabOrder = 1
     end
     object cxDBTextEdit3: TcxDBTextEdit
-      Left = 232
+      Left = 212
       Top = 8
       Width = 105
       Height = 21
@@ -346,7 +370,7 @@ object OstBaseForm: TOstBaseForm
     object cxDBTextEdit4: TcxDBTextEdit
       Left = 56
       Top = 32
-      Width = 369
+      Width = 412
       Height = 21
       DataBinding.DataField = 'NAME_IN'
       DataBinding.DataSource = DocOstDataSource
@@ -362,7 +386,7 @@ object OstBaseForm: TOstBaseForm
     object cxDBTextEdit5: TcxDBTextEdit
       Left = 56
       Top = 56
-      Width = 369
+      Width = 412
       Height = 21
       DataBinding.DataField = 'NAME_OUT'
       DataBinding.DataSource = DocOstDataSource
@@ -376,7 +400,7 @@ object OstBaseForm: TOstBaseForm
       TabOrder = 4
     end
     object cxDBTextEdit6: TcxDBTextEdit
-      Left = 351
+      Left = 319
       Top = 8
       Width = 73
       Height = 21
@@ -392,7 +416,7 @@ object OstBaseForm: TOstBaseForm
       TabOrder = 5
     end
     object cxDBButtonEdit1: TcxDBButtonEdit
-      Left = 104
+      Left = 90
       Top = 8
       Width = 121
       Height = 21
@@ -413,11 +437,27 @@ object OstBaseForm: TOstBaseForm
       Style.Font.Style = [fsBold]
       TabOrder = 6
     end
+    object cxDBTextEdit1: TcxDBTextEdit
+      Left = 395
+      Top = 8
+      Width = 73
+      Height = 21
+      DataBinding.DataField = 'DATE_POLUCH'
+      DataBinding.DataSource = DocOstDataSource
+      ParentFont = False
+      Style.Color = clMoneyGreen
+      Style.Font.Charset = DEFAULT_CHARSET
+      Style.Font.Color = clWindowText
+      Style.Font.Height = -11
+      Style.Font.Name = 'MS Sans Serif'
+      Style.Font.Style = [fsBold]
+      TabOrder = 7
+    end
   end
   object cxSplitterInfo: TcxSplitter
     Left = 0
     Top = 381
-    Width = 736
+    Width = 949
     Height = 8
     HotZoneClassName = 'TcxSimpleStyle'
     HotZone.SizePercent = 100
@@ -427,7 +467,7 @@ object OstBaseForm: TOstBaseForm
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 736
+    Width = 949
     Height = 63
     Align = alTop
     TabOrder = 0
@@ -791,6 +831,38 @@ object OstBaseForm: TOstBaseForm
         FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00}
       UseSystemPaint = False
     end
+    object cxShowPanelGrupp: TcxCheckBox
+      Left = 744
+      Top = 8
+      Width = 201
+      Height = 21
+      ParentFont = False
+      Properties.DisplayUnchecked = 'False'
+      Properties.OnChange = cxShowPanelGruppPropertiesChange
+      Properties.Caption = #1055#1086#1082#1072#1079#1072#1090#1080' '#1087#1072#1085#1077#1083#1100' '#1075#1088#1091#1087#1091#1074#1072#1085#1085#1103
+      Style.Font.Charset = DEFAULT_CHARSET
+      Style.Font.Color = clWindowText
+      Style.Font.Height = -11
+      Style.Font.Name = 'MS Sans Serif'
+      Style.Font.Style = [fsBold]
+      TabOrder = 8
+    end
+    object cxShowGrpTMC: TcxCheckBox
+      Left = 745
+      Top = 32
+      Width = 201
+      Height = 21
+      ParentFont = False
+      Properties.DisplayUnchecked = 'False'
+      Properties.OnChange = cxCheckBox1PropertiesChange
+      Properties.Caption = #1055#1086#1082#1072#1079#1072#1090#1080' '#1075#1088#1091#1087#1080' '#1058#1052#1062
+      Style.Font.Charset = DEFAULT_CHARSET
+      Style.Font.Color = clWindowText
+      Style.Font.Height = -11
+      Style.Font.Name = 'MS Sans Serif'
+      Style.Font.Style = [fsBold]
+      TabOrder = 9
+    end
   end
   object DocOstDataSet: TpFIBDataSet
     Database = OstDatabase
@@ -1053,6 +1125,29 @@ object OstBaseForm: TOstBaseForm
     end
     object DocOstDataSetPRIZNAK: TFIBIntegerField
       FieldName = 'PRIZNAK'
+    end
+    object DocOstDataSetGROUP_4: TFIBStringField
+      FieldName = 'GROUP_4'
+      Size = 100
+      EmptyStrToNull = True
+    end
+    object DocOstDataSetGROUP_3: TFIBStringField
+      FieldName = 'GROUP_3'
+      Size = 100
+      EmptyStrToNull = True
+    end
+    object DocOstDataSetGROUP_2: TFIBStringField
+      FieldName = 'GROUP_2'
+      Size = 100
+      EmptyStrToNull = True
+    end
+    object DocOstDataSetGROUP_1: TFIBStringField
+      FieldName = 'GROUP_1'
+      Size = 100
+      EmptyStrToNull = True
+    end
+    object DocOstDataSetDATE_POLUCH: TFIBDateField
+      FieldName = 'DATE_POLUCH'
     end
   end
   object DocOstDataSource: TDataSource

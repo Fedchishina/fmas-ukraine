@@ -1553,8 +1553,8 @@ begin
 
         if Priznak_bloka = 1 then
         begin
-            cxTextEditBegPrice.Enabled    := false;
-            cxTextEditBegIznos.Enabled    := false;
+           { cxTextEditBegPrice.Enabled    := false;
+            cxTextEditBegIznos.Enabled    := false; }
             cxButtonEditShowBal.Enabled   := true;
         end else
         begin
@@ -2429,7 +2429,8 @@ end;
             end;
         //**********************************************************************
        } //**********************************************************************
-    if cxTextEditBegPrice.Enabled = false then cxButtonEditShowBal.Enabled := true else cxButtonEditShowBal.Enabled := false;
+   // Mardar for HAI 15-10-15
+   // if cxTextEditBegPrice.Enabled = false then cxButtonEditShowBal.Enabled := true else cxButtonEditShowBal.Enabled := false;
 end;
 
 procedure TfmInvKartAdd.cxCheckBox11Click(Sender: TObject);
@@ -3134,7 +3135,8 @@ end;
     }    //**********************************************************************
     if cxTextEditOstPrice.Text='' then cxTextEditOstPrice.EditValue:=0;
     cxTextEditOstIznos.EditValue:=cxButtonEditShowBal.EditValue-cxTextEditOstPrice.EditValue;
-    if cxTextEditBegPrice.Enabled = false then cxButtonEditShowBal.Enabled := true else cxButtonEditShowBal.Enabled := false;
+    //Mardar for HAI 15-10-15
+    {if cxTextEditBegPrice.Enabled = false then cxButtonEditShowBal.Enabled := true else cxButtonEditShowBal.Enabled := false;   }
 end;
 
 procedure TfmInvKartAdd.cxTextEditOstIznosExit(Sender: TObject);
@@ -3307,8 +3309,8 @@ end;
 //**********************************************************************
         if cxTextEditOstIznos.Text='' then cxTextEditOstIznos.EditValue:=0;
         cxTextEditOstPrice.EditValue:=cxButtonEditShowBal.EditValue-cxTextEditOstIznos.EditValue;
-
-    if cxTextEditBegPrice.Enabled = false then cxButtonEditShowBal.Enabled := true else cxButtonEditShowBal.Enabled := false;
+    //Mardar for HAI 15-10-15
+   { if cxTextEditBegPrice.Enabled = false then cxButtonEditShowBal.Enabled := true else cxButtonEditShowBal.Enabled := false; }
 
 
 end;
@@ -4617,7 +4619,8 @@ end;
                 d := 0;
             end;
       }  //**********************************************************************
-    if cxTextEditBegPrice.Enabled = false then cxButtonEditShowBal.Enabled := true else cxButtonEditShowBal.Enabled := false;
+    //Mardar for HAI 15-10-15
+    //if cxTextEditBegPrice.Enabled = false then cxButtonEditShowBal.Enabled := true else cxButtonEditShowBal.Enabled := false;
 end;
 
 
@@ -4720,7 +4723,8 @@ begin
     cxTextEditOstIznos.Text := CurrToStr(StrToCurr(BalPrice)-StrToCurr(cxTextEditOstPrice.Text));
     bal_pro_1               := StrToCurr(cxTextEditOstIznos.Text)+StrToCurr(cxTextEditOstPrice.Text);
     bal_pro_2               := StrToCurr(cxTextEditBegIznos.Text)+StrToCurr(cxTextEditBegPrice.Text);
-    if bal_pro_1 <> bal_pro_2 then
+    //Mardar for HAI 15-10-15
+    {if bal_pro_1 <> bal_pro_2 then
     begin
         cxTextEditBegPrice.Enabled := false;
         cxTextEditBegIznos.Enabled := false;
@@ -4728,7 +4732,7 @@ begin
     begin
         cxTextEditBegPrice.Enabled := true;
         cxTextEditBegIznos.Enabled := true;
-    end;
+    end; }
 
 //**********************************************************************
         prap_flag := 0;

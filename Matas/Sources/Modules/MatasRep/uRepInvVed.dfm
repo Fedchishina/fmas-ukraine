@@ -1,8 +1,8 @@
 object InvRepForm: TInvRepForm
-  Left = 452
-  Top = 294
+  Left = 357
+  Top = 149
   BorderStyle = bsDialog
-  ClientHeight = 216
+  ClientHeight = 238
   ClientWidth = 489
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -72,7 +72,7 @@ object InvRepForm: TInvRepForm
   end
   object Label4: TLabel
     Left = 248
-    Top = 117
+    Top = 141
     Width = 91
     Height = 13
     Caption = #1050#1110#1083#1100#1082#1110#1089#1090#1100' '#1082#1086#1087#1110#1081
@@ -89,6 +89,19 @@ object InvRepForm: TInvRepForm
     Width = 15
     Height = 13
     Caption = #1087#1086
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'MS Sans Serif'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
+  object lblNASetting: TLabel
+    Left = 8
+    Top = 120
+    Width = 85
+    Height = 13
+    Caption = #1044#1088#1091#1082#1091#1074#1072#1090#1080' '#1053#1040
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -146,7 +159,7 @@ object InvRepForm: TInvRepForm
   end
   object OkButton: TcxButton
     Left = 275
-    Top = 180
+    Top = 202
     Width = 101
     Height = 25
     Caption = #1044#1088#1091#1082
@@ -192,7 +205,7 @@ object InvRepForm: TInvRepForm
   end
   object CancelButton: TcxButton
     Left = 380
-    Top = 180
+    Top = 202
     Width = 101
     Height = 25
     Caption = #1042#1110#1076#1084#1110#1085#1080#1090#1080
@@ -262,7 +275,7 @@ object InvRepForm: TInvRepForm
   end
   object cxCheckBox1: TcxCheckBox
     Left = -4
-    Top = 196
+    Top = 218
     Width = 25
     Height = 21
     Properties.DisplayUnchecked = 'False'
@@ -301,6 +314,7 @@ object InvRepForm: TInvRepForm
     Properties.DropDownListStyle = lsFixedList
     Properties.Items.Strings = (
       '')
+    Properties.OnChange = cxReportPropertiesChange
     Style.Font.Charset = DEFAULT_CHARSET
     Style.Font.Color = clWindowText
     Style.Font.Height = -11
@@ -332,7 +346,7 @@ object InvRepForm: TInvRepForm
   end
   object cxCheckOnPrinter: TcxCheckBox
     Left = 64
-    Top = 114
+    Top = 138
     Width = 169
     Height = 21
     ParentFont = False
@@ -347,7 +361,7 @@ object InvRepForm: TInvRepForm
   end
   object cxSelectPrinter: TcxCheckBox
     Left = 64
-    Top = 138
+    Top = 162
     Width = 153
     Height = 21
     ParentFont = False
@@ -362,7 +376,7 @@ object InvRepForm: TInvRepForm
   end
   object cxCopies: TcxSpinEdit
     Left = 344
-    Top = 114
+    Top = 138
     Width = 49
     Height = 21
     BeepOnEnter = False
@@ -380,7 +394,7 @@ object InvRepForm: TInvRepForm
   end
   object cxPrintKol: TcxCheckBox
     Left = 243
-    Top = 130
+    Top = 154
     Width = 222
     Height = 21
     ParentFont = False
@@ -395,7 +409,7 @@ object InvRepForm: TInvRepForm
   end
   object cxButton1: TcxButton
     Left = 6
-    Top = 180
+    Top = 202
     Width = 125
     Height = 25
     Action = actShablon
@@ -440,7 +454,7 @@ object InvRepForm: TInvRepForm
   end
   object cxButton2: TcxButton
     Left = 135
-    Top = 180
+    Top = 202
     Width = 136
     Height = 25
     Action = actShPrint
@@ -533,7 +547,7 @@ object InvRepForm: TInvRepForm
   end
   object cxDates: TcxCheckBox
     Left = 242
-    Top = 150
+    Top = 174
     Width = 222
     Height = 21
     ParentFont = False
@@ -545,6 +559,25 @@ object InvRepForm: TInvRepForm
     Style.Font.Name = 'MS Sans Serif'
     Style.Font.Style = [fsBold]
     TabOrder = 16
+  end
+  object cxNASetting: TcxComboBox
+    Left = 112
+    Top = 115
+    Width = 369
+    Height = 21
+    BeepOnEnter = False
+    ParentFont = False
+    Properties.DropDownListStyle = lsFixedList
+    Properties.Items.Strings = (
+      #1059#1089#1110
+      #1047' '#1085#1091#1083#1100#1086#1074#1086#1102' '#1079#1072#1083#1080#1096#1082#1086#1074#1086#1102' '#1074#1072#1088#1090#1110#1089#1090#1102
+      #1047' '#1085#1077#1085#1091#1083#1100#1086#1074#1086#1102' '#1079#1072#1083#1080#1096#1082#1086#1074#1086#1102' '#1074#1072#1088#1090#1110#1089#1090#1102)
+    Style.Font.Charset = DEFAULT_CHARSET
+    Style.Font.Color = clWindowText
+    Style.Font.Height = -11
+    Style.Font.Name = 'MS Sans Serif'
+    Style.Font.Style = [fsBold]
+    TabOrder = 17
   end
   object WorkDatabase: TpFIBDatabase
     DBParams.Strings = (
@@ -613,7 +646,7 @@ object InvRepForm: TInvRepForm
       ''
       'end.')
     Left = 2
-    Top = 136
+    Top = 32
     Datasets = <
       item
         DataSetName = 'frxDBDataset_mna_kart'
@@ -1400,7 +1433,7 @@ object InvRepForm: TInvRepForm
     Wysiwyg = True
     Creator = 'FastReport http://www.fast-report.com'
     Left = 3
-    Top = 107
+    Top = 3
   end
   object frxXLSExport1: TfrxXLSExport
     UseFileCache = True
@@ -1410,19 +1443,19 @@ object InvRepForm: TInvRepForm
     FastExport = True
     PageBreaks = True
     Left = 34
-    Top = 107
+    Top = 3
   end
   object frxDesigner1: TfrxDesigner
     Restrictions = []
     Left = 70
-    Top = 136
+    Top = 32
   end
   object frxDBDataset1: TfrxDBDataset
     UserName = 'frxDBDataset1'
     CloseDataSource = False
     DataSet = ReportDataSet
     Left = 33
-    Top = 138
+    Top = 34
   end
   object ds_vibor: TpFIBDataSet
     Database = WorkDatabase

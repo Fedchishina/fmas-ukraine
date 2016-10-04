@@ -32,6 +32,7 @@ type
     pFIBTransaction1: TpFIBTransaction;
     cxSCH: TcxCheckBox;
     cxSchList: TcxButtonEdit;
+    cxOnlyCheck: TcxCheckBox;
     procedure cxButtonCancelClick(Sender: TObject);
     procedure cxButtonCreateClick(Sender: TObject);
     procedure cxSchListPropertiesButtonClick(Sender: TObject;
@@ -121,6 +122,7 @@ procedure TfmCreateVedomost.cxButtonCreateClick(Sender: TObject);
 VAR
     res : Variant;
     strik, chisloik, godokik : string;
+    vOnlyCheck:Integer;
     //T : TfmAmSelect;
     TT : TfmWaite;
 begin
@@ -179,8 +181,12 @@ begin
     TT.UpDate;
     //*******************   Insert into amort_history   ************************
     if cxSchList.visible=false then FILTER_ID_SESSION:=0;
-   
-    Save_amort_calc(id_vedomostik, FILTER_ID_SESSION);
+    if cxOnlyCheck.Checked then
+      vOnlyCheck := 1
+    else
+      vOnlyCheck := 0;
+
+    Save_amort_calc(id_vedomostik, FILTER_ID_SESSION, vOnlyCheck);
 
     res := UAmort_selection.ShowAm_Ved({self,} pFIBDatabase1.Handle, id_vedomostik, true);
     if VarArrayDimCount(res) > 0 then

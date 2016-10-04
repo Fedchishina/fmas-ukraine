@@ -47,6 +47,7 @@ type
     cxAvtoMoIn: TcxButtonEdit;
     cxAvtoMOOut: TcxButtonEdit;
     lbl2: TLabel;
+    cxDatePoluch: TcxCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure CancelButtonClick(Sender: TObject);

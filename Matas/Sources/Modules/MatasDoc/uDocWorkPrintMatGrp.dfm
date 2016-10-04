@@ -386,7 +386,8 @@ object DocWorkPrintMatGrp: TDocWorkPrintMatGrp
         'SELECT * FROM MAT_SEL_NOMN_BY_PERIOD_EX(:PDATE_BEG,:PDATE_END,:P' +
         'TIP)'
       'ORDER BY NAME_GROUP1,NAME_GROUP2,NAME;')
-    Left = 32
+    Left = 120
+    Top = 65528
     poSQLINT64ToBCD = True
   end
   object pFIBTransaction1: TpFIBTransaction

@@ -1,6 +1,6 @@
 object DocWorkSchKekvForm: TDocWorkSchKekvForm
-  Left = 433
-  Top = 310
+  Left = 325
+  Top = 166
   Width = 512
   Height = 358
   Color = clBtnFace
@@ -17,7 +17,7 @@ object DocWorkSchKekvForm: TDocWorkSchKekvForm
   object cxGridPos: TcxGrid
     Left = 0
     Top = 0
-    Width = 504
+    Width = 496
     Height = 267
     Align = alTop
     TabOrder = 0
@@ -46,6 +46,17 @@ object DocWorkSchKekvForm: TDocWorkSchKekvForm
       object SCH_TITLE: TcxGridDBColumn
         Caption = #1053#1072#1079#1074#1072' '#1088#1072#1093#1091#1085#1082#1091
         Visible = False
+        Options.Editing = False
+        Options.Filtering = False
+      end
+      object ID_POS: TcxGridDBColumn
+        Caption = 'ID_POS'
+        Visible = False
+        Options.Editing = False
+        Options.Filtering = False
+      end
+      object NAME_POS: TcxGridDBColumn
+        Caption = #1053#1072#1079#1074#1072
         Options.Editing = False
         Options.Filtering = False
       end
