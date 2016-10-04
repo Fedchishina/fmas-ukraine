@@ -11,7 +11,7 @@ uses
   cxGridDBTableView, cxGridLevel, cxClasses, cxControls, cxGridCustomView,
   cxGrid, cxCheckBox, cxTextEdit, cxContainer, cxMaskEdit, cxDropDownEdit,
   cxCalendar, StdCtrls, Buttons, ExtCtrls, cxLabel, cxSplitter,UWAddOtch,UWSelectCardMen,
-  ImgList, Un_Progress_form;
+  ImgList, Un_Progress_form, cxDBLabel;
 
 type
   TAddVedomostFromAvOtch = class(TForm)
@@ -97,6 +97,7 @@ type
     cxGridAllOtchetDBTableView1DB_NAME_TYPE_DOC: TcxGridDBColumn;
     CheckBox_SKRIT_VED_R_REG: TCheckBox;
     cxGridAllOtchetDBTableView1DB_IS_IN_VED_RUCH_REGIM: TcxGridDBColumn;
+    cxDBLabel1: TcxDBLabel;
     procedure cxButton2Click(Sender: TObject);
     procedure BitBtnFilterClick(Sender: TObject);
     procedure cxTextEditFilterKeyPress(Sender: TObject; var Key: Char);
@@ -432,7 +433,7 @@ begin
    begin
       Arect:=AViewInfo.Bounds;
       ACanvas.Canvas.Brush.Color:=clSilver;
-      ACanvas.Canvas.FillRect(Arect);
+      ACanvas.Canvas.FillRect(Arect);   
    end;
 
    if ((AViewInfo.GridRecord.Values[0]= 1) and  (not AViewInfo.GridRecord.Focused )) then

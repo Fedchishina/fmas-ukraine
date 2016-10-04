@@ -608,6 +608,12 @@ procedure TfmUWAddVedomost2.AAddVedomostExecute(Sender: TObject);
 var
     id_vedomost : int64;
 begin
+  if (cxDateEdit1.text ='') then
+    begin
+      showmessage('Заповніть дату відомості!');
+      cxDateEdit1.Setfocus;
+      Exit;
+    end;
 
   // вставка через ручной режим
   if (id_type_vedom = 1) then
@@ -632,7 +638,7 @@ begin
         end;
     end else
     begin
-        showmessage('');
+        showmessage('Помилка при збереженні відомості');
         exit;
     end;
 

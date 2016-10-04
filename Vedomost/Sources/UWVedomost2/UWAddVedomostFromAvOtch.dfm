@@ -1,8 +1,8 @@
 object AddVedomostFromAvOtch: TAddVedomostFromAvOtch
-  Left = 39
-  Top = 253
+  Left = 399
+  Top = 212
   Width = 1193
-  Height = 659
+  Height = 543
   Caption = 'AddVedomostFromAvOtch'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -18,7 +18,7 @@ object AddVedomostFromAvOtch: TAddVedomostFromAvOtch
     Left = 0
     Top = 0
     Width = 1177
-    Height = 621
+    Height = 505
     Align = alClient
     Caption = 'Panel1'
     TabOrder = 0
@@ -167,7 +167,7 @@ object AddVedomostFromAvOtch: TAddVedomostFromAvOtch
       Left = 1
       Top = 73
       Width = 616
-      Height = 498
+      Height = 382
       Align = alClient
       Caption = 'Panel3'
       TabOrder = 1
@@ -175,7 +175,7 @@ object AddVedomostFromAvOtch: TAddVedomostFromAvOtch
         Left = 1
         Top = 1
         Width = 614
-        Height = 496
+        Height = 380
         Align = alClient
         TabOrder = 0
         object cxGridAllOtchetDBTableView1: TcxGridDBTableView
@@ -280,7 +280,7 @@ object AddVedomostFromAvOtch: TAddVedomostFromAvOtch
     end
     object Panel6: TPanel
       Left = 1
-      Top = 571
+      Top = 455
       Width = 1175
       Height = 49
       Align = alBottom
@@ -463,12 +463,22 @@ object AddVedomostFromAvOtch: TAddVedomostFromAvOtch
         TabOrder = 7
         Caption = #1079#1074#1110#1090' '#1073#1091#1074' '#1086#1073#1088#1072#1085' '#1088#1072#1085#1110#1096#1077
       end
+      object cxDBLabel1: TcxDBLabel
+        Left = 504
+        Top = 16
+        Width = 329
+        Height = 17
+        DataBinding.DataField = 'NUM_AND_DATE_VEDOMOST'
+        DataBinding.DataSource = DSourceAll
+        AutoSize = False
+        TabOrder = 8
+      end
     end
     object Panel7: TPanel
       Left = 625
       Top = 73
       Width = 551
-      Height = 498
+      Height = 382
       Align = alRight
       Caption = 'Panel7'
       TabOrder = 3
@@ -476,7 +486,7 @@ object AddVedomostFromAvOtch: TAddVedomostFromAvOtch
         Left = 1
         Top = 1
         Width = 58
-        Height = 496
+        Height = 380
         Align = alLeft
         TabOrder = 0
         object BitBtnAdd: TBitBtn
@@ -586,7 +596,7 @@ object AddVedomostFromAvOtch: TAddVedomostFromAvOtch
         Left = 59
         Top = 1
         Width = 491
-        Height = 496
+        Height = 380
         Align = alClient
         Caption = 'Panel4'
         TabOrder = 1
@@ -594,7 +604,7 @@ object AddVedomostFromAvOtch: TAddVedomostFromAvOtch
           Left = 1
           Top = 1
           Width = 489
-          Height = 494
+          Height = 378
           Align = alClient
           TabOrder = 0
           object cxGridVibrOtchetDBTableView1: TcxGridDBTableView
@@ -666,7 +676,7 @@ object AddVedomostFromAvOtch: TAddVedomostFromAvOtch
       Left = 617
       Top = 73
       Width = 8
-      Height = 498
+      Height = 382
       HotZoneClassName = 'TcxMediaPlayer9Style'
       HotZone.SizePercent = 100
       AlignSplitter = salRight

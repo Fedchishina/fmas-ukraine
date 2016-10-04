@@ -1,6 +1,6 @@
 object fmUWAddVedomost2: TfmUWAddVedomost2
-  Left = 205
-  Top = 262
+  Left = 287
+  Top = 20
   Width = 994
   Height = 611
   Color = clBtnFace

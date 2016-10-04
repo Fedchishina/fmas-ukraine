@@ -55,11 +55,11 @@ requires
   fsDB7,
   AArrayPack,
   Globals,
-  UWSpFuncLoader,
   LoadDog,
   AlBPLMyLoad,
   cxPageControlVCLD7,
-  frxe7;
+  frxe7,
+  UWSpFuncLoader;
 
 contains
   UWAddVedomost2 in 'UWAddVedomost2.pas' {fmUWAddVedomost2},
