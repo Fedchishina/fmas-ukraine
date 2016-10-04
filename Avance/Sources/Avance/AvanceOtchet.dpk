@@ -50,7 +50,14 @@ requires
   frxDB7,
   vclx,
   VclSmp,
-  AlBPLMyLoad;
+  cxExtEditorsVCLD7,
+  AlBPLMyLoad,
+  tee,
+  fqb70,
+  bdertl,
+  fsDB7,
+  cxCommonEditingVCLD7,
+  cxTreeListVCLD7;
 
 contains
   mainAvanceOtchet in 'mainAvanceOtchet.pas' {fmAvanceOtchet},
@@ -65,6 +72,11 @@ contains
   AvanceShablon in 'AvanceShablon.pas' {fm_j4shablon},
   SelectFromVedomost in 'SelectFromVedomost.pas' {fm_SelectFromVedomost},
   PrintReestr in '..\MainForm\PrintReestr.pas' {frmPrintReestr},
-  AvanceSelectTypeDoc in 'AvanceSelectTypeDoc.pas' {fmSelectTypeDoc};
+  AvanceSelectTypeDoc in 'AvanceSelectTypeDoc.pas' {fmSelectTypeDoc},
+  AddCostAvance in 'AddCostAvance.pas' {fmAddCostAvance},
+  PrintReestrPDV in '..\MainForm\PrintReestrPDV.pas' {frmPrintReestrPDV},
+  PlaceMissionAddChange in 'PlaceMissionAddChange.pas' {fmPlaceMissionAddChange},
+  PlaceMissionForm in 'PlaceMissionForm.pas' {fmPlaceMissionForm},
+  PlaceMissionAddChangeDate in 'PlaceMissionAddChangeDate.pas' {fmPlaceMissionAddChangeDate};
 
 end.

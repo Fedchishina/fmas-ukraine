@@ -14,7 +14,7 @@ uses
   cxGridTableView, cxGridDBTableView, cxGrid, cxSplitter, Kernel, FIBQuery,
   pFIBQuery, pFIBStoredProc, FIBDatabase, IBase, Un_R_file_Alex, Menus, Un_func_file_Alex,
   dxStatusBar, cxImage, ImgList, cxCurrencyEdit, Math, cxCheckBox, SelectFromVedomost,
-  cxButtonEdit,AvanceSelectTypeDoc;
+  cxButtonEdit,AvanceSelectTypeDoc, PlaceMissionForm, PlaceMissionClass;
 
 type
   TfmModeAvance = (AddAvance, ChangeAvance, ShowAvance, ClonAvance);
@@ -151,6 +151,21 @@ type
     DataSetSch: TpFIBDataSet;
     LabelTypeDoc: TLabel;
     ButtonEditTypeDoc: TcxButtonEdit;
+    TabSheet6: TTabSheet;
+    cxGrid3DBTableView1: TcxGridDBTableView;
+    cxGrid3Level1: TcxGridLevel;
+    cxGrid3: TcxGrid;
+    cxGrid3DBTableView1DBColumn1: TcxGridDBColumn;
+    cxGrid3DBTableView1DBColumn2: TcxGridDBColumn;
+    cxGrid3DBTableView1DBColumn3: TcxGridDBColumn;
+    cxGrid3DBTableView1DBColumn4: TcxGridDBColumn;
+    RxMemoryDataCost: TRxMemoryData;
+    DataSourceCost: TDataSource;
+    pFIBDatabase1: TpFIBDatabase;
+    cxPlaceMissionButtonEdit: TcxMemo;
+    cxPlaceMissionButton: TcxButton;
+    cxPlaceMissionLabel1: TcxLabel;
+    cxPlaceMissionLabel2: TcxLabel;
     procedure cxButtonCloseClick(Sender: TObject);
     procedure cxDateEditAoPropertiesChange(Sender: TObject);
     procedure cxEditNumber2KeyPress(Sender: TObject; var Key: Char);
@@ -190,6 +205,11 @@ type
     procedure Get_Date_Beg_end(var date_b, date_e: tdate);
     procedure ButtonEditTypeDocPropertiesButtonClick(Sender: TObject;
       AButtonIndex: Integer);
+    procedure cxPlaceMissionButtonEditPropertiesButtonClick(
+      Sender: TObject; AButtonIndex: Integer);
+    procedure ClearBitBtnClick(Sender: TObject);
+    procedure cxPlaceMissionButtonClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     my_m : TfmModeAvance;
     kod_system : string;
@@ -226,6 +246,7 @@ type
     is_select_type_doc : Integer;
     id_type_doc : Int64;
     name_type_doc : string;
+    key_session_place_mission : Int64;
     constructor Create(AOwner: TComponent; mform : TfmAvanceOtchet; mclass: TMainClassAvance; DB: TpFIBDatabase; m : TfmModeAvance; rassch : integer; kod_sys : string; id_system : int64; id_ao_send : int64; id_p : int64); reintroduce; overload;
   end;
 
@@ -233,6 +254,7 @@ type
 implementation
 uses AddChangeProvAvance,
      AddRaspAvance,
+     AddCostAvance,
      DogLoaderUnit,
      AvanceInputSumma,
      AvanceSelectSch;
@@ -268,6 +290,7 @@ begin
     myform             := mform;
     ras                := rassch;
     database           := DB;
+    pFIBDatabase1 := myform.DatabaseMain;
 
     cxDateEditFrom.Date := date;
     cxDateEditTo.Date   := date;
@@ -307,12 +330,23 @@ begin
         cxGrid1DBTableView1DBColumn7.Visible := true;
     end;
 
-    if myform.show_date_kom = 1 then
+    if myform.show_place_mission_kom = 1 then
     begin
         cxCheckBoxKom.Visible  := true;
+        cxDateEditFrom.Enabled := False;
+        cxDateEditTo.Enabled := False;
     end else
     begin
+      if myform.show_date_kom = 1 then
+      begin
+        cxCheckBoxKom.Visible  := true;
+        cxDateEditFrom.Enabled := True;
+        cxDateEditTo.Enabled := True;
+      end
+      else
+      begin
         cxCheckBoxKom.Visible  := false;
+      end;
     end;
 
     Class_DataSet.Close;
@@ -736,6 +770,25 @@ begin
              cxCheckBoxKom.Checked   := true;
              cxDateEditFrom.Date     := myform.DataSetMain.FieldByname('R_KOM_DATE_BEG').AsDateTime;
              cxDateEditTo.Date       := myform.DataSetMain.FieldByname('R_KOM_DATE_END').AsDateTime;
+             cxDateEditFrom.enabled := True;
+             cxDateEditto.enabled := True;
+         end;
+
+         if (myform.show_place_mission_kom = 1)  then
+         begin
+           cxPlaceMissionButtonEdit.visible := True;
+           cxPlaceMissionButton.Visible := True;
+           cxPlaceMissionLabel1.Visible := True;
+           cxPlaceMissionLabel2.Visible := True;
+           cxDateEditFrom.enabled := False;
+           cxDateEditto.enabled := False;
+         end
+         else
+         begin
+           cxPlaceMissionButtonEdit.visible := False;
+           cxPlaceMissionButton.Visible := False;
+           cxPlaceMissionLabel1.Visible := False;
+           cxPlaceMissionLabel2.Visible := False;
          end;
 
          DataSetChange.Close;
@@ -751,9 +804,11 @@ begin
 
          try cxLabel5.Caption := myform.DataSetMain.FieldByname('R_TN').AsString except cxLabel5.Caption := ''; end;
          try cxMemoDog.Text   := myform.DataSetMain.FieldByname('R_DOGOVOR').AsString except cxMemoDog.Text   := ''; end;
+
          DataSetChange.Close;
          DataSetChange.SQLs.SelectSQL.Text := 'Select * from J4_DT_AO_RASPREDELENIE_SELECT(' + IntToStr(id_ao_change) + ')';
          DataSetChange.Open;
+
          if DataSetChange.IsEmpty
              then flag_exists_ras := false
              else flag_exists_ras := true;
@@ -770,12 +825,34 @@ begin
                RxMemoryDataRas.Post;
                DataSetChange.Next;
          end;
+
+         //витрати (выгрузка, если были внесены)--------------------------------
+         DataSetChange.Close;
+         DataSetChange.SQLs.SelectSQL.Text := 'Select * from J4_DT_AO_COST_SEL(' + IntToStr(id_ao_change) + ')';
+         DataSetChange.Open;
+         DataSetChange.First;
+
+         while not DataSetChange.Eof do
+         begin
+               RxMemoryDataCost.Open;
+               RxMemoryDataCost.Insert;
+               RxMemoryDataCost.FieldByName('RxMemoryDataCostName').AsString    := DataSetChange.FieldByName('NAME').AsString;
+               RxMemoryDataCost.FieldByName('RxMemoryDataCostSum').AsFloat      := DataSetChange.FieldByName('SUMMA').AsFloat;
+               RxMemoryDataCost.FieldByName('RxMemoryDataCostSumPDV').AsFloat   := DataSetChange.FieldByName('SUMMA_PDV').AsFloat;
+               RxMemoryDataCost.FieldByName('RxMemoryDataCostComment').AsString := DataSetChange.FieldByName('COMMENT').AsString;
+               RxMemoryDataCost.FieldByName('RxMemoryDataCostId').AsInteger     := DataSetChange.FieldByName('ID_SP_AO_COST').AsInteger;
+               RxMemoryDataCost.Post;
+               DataSetChange.Next;
+         end;
+         //----------------------------------------------------------------------
          DataSetChange.Close;
          DataSetChange.SQLs.SelectSQL.Text := 'Select * from J4_SELECT_ALL_PROV('''+myform.DataSetMain.FieldByName('R_ID_DT_DOC').AsString +''')';
          DataSetChange.Open;
          DataSetChange.First;
          DefineKodSchAo(DataSetChange.FieldByName('ID_SCH').AsVariant);
-         cxDateEditAoPropertiesChange(Self);
+
+         //cxDateEditAoPropertiesChange(Self);
+
          i := 1;
          while not DataSetChange.Eof do
          begin
@@ -855,6 +932,7 @@ begin
                end;
                DataSetChange.Next;
          end;
+
     end;
 
     if  (m = ClonAvance) then
@@ -872,6 +950,25 @@ begin
              cxCheckBoxKom.Checked   := true;
              cxDateEditFrom.Date     := myform.DataSetMain.FieldByname('R_KOM_DATE_BEG').AsDateTime;
              cxDateEditTo.Date       := myform.DataSetMain.FieldByname('R_KOM_DATE_END').AsDateTime;
+             cxDateEditFrom.enabled := True;
+             cxDateEditto.enabled := True;
+         end;
+
+         if (myform.show_place_mission_kom = 1)  then
+         begin
+           cxPlaceMissionButtonEdit.visible := True;
+           cxPlaceMissionButton.Visible := True;
+           cxPlaceMissionLabel1.Visible := True;
+           cxPlaceMissionLabel2.Visible := True;
+           cxDateEditFrom.enabled := False;
+           cxDateEditto.enabled := False;
+         end
+         else
+         begin
+           cxPlaceMissionButtonEdit.visible := False;
+           cxPlaceMissionButton.Visible := False;
+           cxPlaceMissionLabel1.Visible := False;
+           cxPlaceMissionLabel2.Visible := False;
          end;
 
          DataSetChange.Close;
@@ -941,6 +1038,27 @@ begin
                RxMemoryDataRas.Post;
                DataSetChange.Next;
          end;
+
+         //витрати (выгрузка, если были внесены)--------------------------------
+         DataSetChange.Close;
+         DataSetChange.SQLs.SelectSQL.Text := 'Select * from J4_DT_AO_COST_SEL(' + IntToStr(id_ao_change) + ')';
+         DataSetChange.Open;
+         DataSetChange.First;
+
+         while not DataSetChange.Eof do
+         begin
+               RxMemoryDataCost.Open;
+               RxMemoryDataCost.Insert;
+               RxMemoryDataCost.FieldByName('RxMemoryDataCostName').AsString    := DataSetChange.FieldByName('NAME').AsString;
+               RxMemoryDataCost.FieldByName('RxMemoryDataCostSum').AsFloat      := DataSetChange.FieldByName('SUMMA').AsFloat;
+               RxMemoryDataCost.FieldByName('RxMemoryDataCostSumPDV').AsFloat   := DataSetChange.FieldByName('SUMMA_PDV').AsFloat;
+               RxMemoryDataCost.FieldByName('RxMemoryDataCostComment').AsString := DataSetChange.FieldByName('COMMENT').AsString;
+               RxMemoryDataCost.FieldByName('RxMemoryDataCostId').AsInteger     := DataSetChange.FieldByName('ID_SP_AO_COST').AsInteger;
+               RxMemoryDataCost.Post;
+               DataSetChange.Next;
+         end;
+         //----------------------------------------------------------------------
+
          DataSetChange.Close;
          DataSetChange.SQLs.SelectSQL.Text := 'Select * from J4_SELECT_ALL_PROV('''+myform.DataSetMain.FieldByName('R_ID_DT_DOC').AsString +''')';
          DataSetChange.Open;
@@ -1070,6 +1188,7 @@ begin
 
 
     flag_na_aftoscroll := true;
+    
 end;
 
 procedure TfmAddChangeAvance.Get_Date_Beg_end(var date_b, date_e: tdate);
@@ -1106,6 +1225,12 @@ end;
 
 procedure TfmAddChangeAvance.cxButtonCloseClick(Sender: TObject);
 begin
+    Class_Transaction_Wr.StartTransaction;
+    Class_StoredProc.StoredProcName:='J4_DT_AO_PL_MIS_TMP_DEL_BY_SES';
+    Class_StoredProc.ParamByName('key_session').AsInt64 := key_session_place_mission;
+    Class_StoredProc.Prepare;
+    Class_StoredProc.ExecProc;
+    Class_Transaction_Wr.Commit;
     Close;
 end;
 
@@ -1275,14 +1400,12 @@ procedure TfmAddChangeAvance.PageControl1Changing(Sender: TObject;
   var AllowChange: Boolean);
 begin
     if PageControl1.ActivePage = TabSheet2 then
-    begin
-        PageControl1.ActivePage := TabSheet1;
-//        SpBtChange.Enabled := true;
-    end else
-    begin
+        PageControl1.ActivePage := TabSheet6
+    else
+      if (PageControl1.ActivePage = TabSheet6) then
+        PageControl1.ActivePage := TabSheet1
+      else
         PageControl1.ActivePage := TabSheet2;
-//        SpBtChange.Enabled := false;
-    end;
 end;
 
 procedure TfmAddChangeAvance.cxMRUEditFioPropertiesButtonClick(
@@ -1378,14 +1501,49 @@ var
     flag : boolean;
     name : string;
     ssum, sum_prov : Currency;
+    summaCost,summaPDVCost :Currency; //для витрат
     id_smeta, id_stat, id_r, id_k, id_sch, id_man_prov, id_kor_sch, id_dog, kod_dog : int64;
     name_smeta, name_stat, name_r, name_k, name_sch, name_fio, name_kor_sch, date_dog, num_dog, name_cust, title_sm, title_rz, title_st, title_kekv, title_sch, title_kor_sch, type_dog, reg_dog, tin, birthday : string;
     summa, summa_doc : double;
+    comment : string;
     c : TfmModeProv;
 begin
     flag_na_aftoscroll := false;
     if my_m <> ShowAvance then
     begin
+      if PageControl1.ActivePage = TabSheet6 then
+        //добавление витрат
+        begin
+            res := Un_lo_file_Alex.LoadSpEditSpCostAvanse(self, 1, database);
+            if VarArrayDimCount(res) > 0 then   //
+            begin
+                if (res[2]<>null) and (res[0]<>null) then
+                begin
+                    flag := false;
+                    name := res[2];
+                    id   := res[0];
+                    try ssum := StrToCurr(cxTextEditSumma.Text); except ssum := 0; end;
+                    num          := 1;
+                    summaCost    := 0;
+                    summaPDVCost := 0;
+                    comment      := '';
+                    if Show_Cost(self, myform.DatabaseMain, myform.TransactionRead,
+                                AddCost, id, summaCost, summaPDVCost, name, comment) then
+                    begin
+                        RxMemoryDataCost.Open;
+                        RxMemoryDataCost.Insert;
+                        RxMemoryDataCost.FieldByName('RxMemoryDataCostName').value       := NAME;
+                        RxMemoryDataCost.FieldByName('RxMemoryDataCostSum').value        := summaCost;
+                        RxMemoryDataCost.FieldByName('RxMemoryDataCostSumPDV').Value     := summaPDVCost;
+                        RxMemoryDataCost.FieldByName('RxMemoryDataCostComment').Value    := comment;
+                        RxMemoryDataCost.FieldByName('RxMemoryDataCostId').AsInteger     := ID;
+                        RxMemoryDataCost.Post;
+                    END;
+
+                end;
+            end;
+        end;
+
         if PageControl1.ActivePage = TabSheet2 then
     //добавление расшафровок
         begin
@@ -1709,6 +1867,14 @@ begin
   begin
       if not RxMemoryDataRas.IsEmpty then RxMemoryDataRas.Delete;
   end;
+
+  if cxGrid3.IsFocused then
+  begin
+      if MessageDlg('Увага!','Ви дійсно бажаєте вилучити запис?',mtConfirmation, [mbYes, mbNo]) = mryes then
+        if not RxMemoryDataCost.IsEmpty then
+          RxMemoryDataCost.Delete;
+  end;
+
   flag_na_aftoscroll := true;
 end;
 
@@ -1732,6 +1898,23 @@ begin
     DoResult           := false;
     flag := false;
     mes := '';
+
+    if (myform.show_place_mission_kom = 1) and (cxCheckBoxKom.Checked) then
+    begin
+      Class_Transaction_Wr.StartTransaction;
+      Class_StoredProc.StoredProcName:='J4_SELECT_COUNT_PLACE_MISSION_T';
+      Class_StoredProc.ParamByName('key_session').AsInt64 := key_session_place_mission;
+      Class_StoredProc.Prepare;
+      Class_StoredProc.ExecProc;
+      Class_Transaction_Wr.Commit;    
+
+      if (Class_StoredProc.ParamByName('COUNT_PLACE_MISSION').AsInt64 = 0) then
+      begin
+        ShowMessage('Не введено жодного місця перебування у відрядженні! Заповніть інформацію або зниміть галочку "Відрядження"');
+        Exit;
+      end;
+    end;
+
 
     if ((use_new_alg_for_num_ao=1) and (date_new_alg_for_num_ao<=cxDateEditAo.Date) and ((kod_sch_ao=null)or(kod_sch_ao=0))) then
     begin
@@ -2013,6 +2196,32 @@ begin
                     end;
                 end;
             end;
+            //витрати добавление
+            if not RxMemoryDataCost.IsEmpty then
+              begin
+                  RxMemoryDataCost.First;
+                  while not RxMemoryDataCost.Eof do
+                  begin
+                      Class_StoredProc.StoredProcName:='J4_DT_AO_COST_INS';
+                      Class_StoredProc.Prepare;
+                      Class_StoredProc.ParamByName('ID_AO').AsInt64         := id_ao;
+                      Class_StoredProc.ParamByName('ID_SP_AO_COST').AsInt64 := RxMemoryDataCost.FieldByName('RxMemoryDataCostId').AsInteger;
+                      Class_StoredProc.ParamByName('SUMMA').AsDouble        := RxMemoryDataCost.FieldByName('RxMemoryDataCostSum').AsFloat;
+                      Class_StoredProc.ParamByName('SUMMA_PDV').AsDouble    := RxMemoryDataCost.FieldByName('RxMemoryDataCostSumPDV').AsFloat;
+                      Class_StoredProc.ParamByName('comment').AsString      := RxMemoryDataCost.FieldByName('RxMemoryDataCostComment').AsString;
+                      Class_StoredProc.ExecProc;
+                      RxMemoryDataCost.Next;
+                  end;
+              end;
+
+             //-------- добавление мест пребывания в командировке --------------
+             Class_StoredProc.StoredProcName:='J4_DT_AO_PLACE_MISSION_INS';
+             Class_StoredProc.Prepare;
+             Class_StoredProc.ParamByName('key_session').AsInt64 := key_session_place_mission;
+             Class_StoredProc.ParamByName('ID_AO').AsInt64 := id_ao;
+             Class_StoredProc.ExecProc;
+             //-----------------------------------------------------------------
+
                     if (myform.id_oper = 2) then
                     begin
                         if(myform.prihod=0) then
@@ -2103,6 +2312,7 @@ begin
         end
         end;
     end;
+
   //klonirovanie
   if my_m = ClonAvance then
     begin
@@ -2219,6 +2429,32 @@ begin
                     end;
                 end;
             end;
+
+            //витрати добавление
+            if not RxMemoryDataCost.IsEmpty then
+              begin
+                  RxMemoryDataCost.First;
+                  while not RxMemoryDataCost.Eof do
+                  begin
+                      Class_StoredProc.StoredProcName:='J4_DT_AO_COST_INS';
+                      Class_StoredProc.Prepare;
+                      Class_StoredProc.ParamByName('ID_AO').AsInt64         := id_ao;
+                      Class_StoredProc.ParamByName('ID_SP_AO_COST').AsInt64 := RxMemoryDataCost.FieldByName('RxMemoryDataCostId').AsInteger;
+                      Class_StoredProc.ParamByName('SUMMA').AsDouble        := RxMemoryDataCost.FieldByName('RxMemoryDataCostSum').AsFloat;
+                      Class_StoredProc.ParamByName('SUMMA_PDV').AsDouble    := RxMemoryDataCost.FieldByName('RxMemoryDataCostSumPDV').AsFloat;
+                      Class_StoredProc.ParamByName('comment').AsString      := RxMemoryDataCost.FieldByName('RxMemoryDataCostComment').AsString;
+                      Class_StoredProc.ExecProc;
+                      RxMemoryDataCost.Next;
+                  end;
+              end;
+             //-------- добавление мест пребывания в командировке --------------
+             Class_StoredProc.StoredProcName:='J4_DT_AO_PLACE_MISSION_INS';
+             Class_StoredProc.Prepare;
+             Class_StoredProc.ParamByName('key_session').AsInt64 := key_session_place_mission;
+             Class_StoredProc.ParamByName('ID_AO').AsInt64 := id_ao;
+             Class_StoredProc.ExecProc;
+             //-----------------------------------------------------------------
+
                     if (myform.id_oper = 2) then
                     begin
                         Query.Close;
@@ -2370,17 +2606,18 @@ begin
         Class_DataSet.Transaction    := Class_Transaction_Wr;
         Class_Transaction_Wr.StartTransaction;
         try
-
             //изменение шапки
             s1 := myform.DataSetMain.FieldByName('R_SUM_AO').AsCurrency;
             s2 := StrToCurr(cxTextEditSumma.Text);
             s3 := 0.01;
 
-            IF (myform.DataSetMain.FieldByName('R_DATE_AO').AsDateTime <> cxDateEditAo.Date) or (myform.DataSetMain.FieldByName('R_NOTE').AsString <> cxMemoNote.Text) or
-               (TFIBBCDField(myform.DataSetMain.FieldByName('R_ID_MAN')).AsInt64 <> id_people ) or (myform.DataSetMain.FieldByName('R_NUM_AO').AsString <> cxEditNumber2.Text) or
+            {IF (myform.DataSetMain.FieldByName('R_DATE_AO').AsDateTime <> cxDateEditAo.Date) or
+               (myform.DataSetMain.FieldByName('R_NOTE').AsString <> cxMemoNote.Text) or
+               (TFIBBCDField(myform.DataSetMain.FieldByName('R_ID_MAN')).AsInt64 <> id_people ) or
+               (myform.DataSetMain.FieldByName('R_NUM_AO').AsString <> cxEditNumber2.Text) or
                (Roundto(abs(s1 - s2),-2) >= s3) or
                (cxCheckBoxKom.Checked) or
-               (myform.DataSetMain.FieldByName('KOD_SCH').AsInteger <> kod_sch_ao) then
+               (myform.DataSetMain.FieldByName('KOD_SCH').AsInteger <> kod_sch_ao) then  }
             begin
                 Class_StoredProc.StoredProcName := 'J4_DT_AO_CHANGE';
                 Class_StoredProc.Prepare;
@@ -2398,7 +2635,7 @@ begin
                     Class_StoredProc.ParamByName('D_KOM_DATE_BEG').AsDate       := cxDateEditFrom.Date;
                     Class_StoredProc.ParamByName('D_KOM_DATE_END').AsDate       := cxDateEditTo.Date;
                 end else
-                begin
+                begin   
                     Class_StoredProc.ParamByName('D_KOM_ON').AsInteger          := 0;
                     Class_StoredProc.ParamByName('D_KOM_DATE_BEG').AsDate       := StrToDate('01.01.1900');
                     Class_StoredProc.ParamByName('D_KOM_DATE_END').AsDate       := StrToDate('01.01.1900');
@@ -2408,7 +2645,6 @@ begin
             end;
 
             //изменение расшифровок
-
             if ras = 1 then
             begin
                 Class_StoredProc.StoredProcName := 'J4_DT_AO_RASPREDELENIE_DELETE';
@@ -2456,6 +2692,42 @@ begin
                     end;
                 end;
             end;
+
+            //изменение витрат
+            Class_StoredProc.StoredProcName := 'J4_DT_AO_COST_DELETE';
+            Class_StoredProc.ParamByName('D_ID_AO').AsInt64   := id_ao;
+            Class_StoredProc.ExecProc;
+            if not RxMemoryDataCost.IsEmpty then
+              begin
+                  RxMemoryDataCost.First;
+                  while not RxMemoryDataCost.Eof do
+                  begin
+                      Class_StoredProc.StoredProcName:='J4_DT_AO_COST_INS';
+                      Class_StoredProc.Prepare;
+                      Class_StoredProc.ParamByName('ID_AO').AsInt64         := id_ao;
+                      Class_StoredProc.ParamByName('ID_SP_AO_COST').AsInt64 := RxMemoryDataCost.FieldByName('RxMemoryDataCostId').AsInteger;
+                      Class_StoredProc.ParamByName('SUMMA').AsDouble        := RxMemoryDataCost.FieldByName('RxMemoryDataCostSum').AsFloat;
+                      Class_StoredProc.ParamByName('SUMMA_PDV').AsDouble    := RxMemoryDataCost.FieldByName('RxMemoryDataCostSumPDV').AsFloat;
+                      Class_StoredProc.ParamByName('comment').AsString      := RxMemoryDataCost.FieldByName('RxMemoryDataCostComment').AsString;
+                      Class_StoredProc.ExecProc;
+                      RxMemoryDataCost.Next;
+                  end;
+              end;
+
+             if (cxCheckBoxKom.Checked = false) then  //если чекбокс снят - удаляем все выбранные места пребывания из темповой таблицы
+             begin
+                 Class_StoredProc.StoredProcName := 'J4_DT_AO_PL_MIS_TMP_DEL_BY_SES';
+                 Class_StoredProc.ParamByName('KEY_SESSION').AsInt64 := key_session_place_mission;
+                 Class_StoredProc.ExecProc;
+             end;
+
+             //-------- добавление мест пребывания в командировке (если такие есть в темп. таблице - запишутся. Если нету - то ничего не запишется)--------------
+             Class_StoredProc.StoredProcName:='J4_DT_AO_PLACE_MISSION_INS';
+             Class_StoredProc.Prepare;
+             Class_StoredProc.ParamByName('key_session').AsInt64 := key_session_place_mission;
+             Class_StoredProc.ParamByName('ID_AO').AsInt64 := id_ao;
+             Class_StoredProc.ExecProc;
+             //-----------------------------------------------------------------
 
                 if (id_all > 0) then
                 begin
@@ -2595,10 +2867,18 @@ begin
       end
       end;
             DecimalSeparator := ',';
-            end;
-            myform.ActionRefreshExecute(sender);
-            Myform.DataSetMain.Locate('ID_AO', id_ao, []);
-            close;
+    end;
+
+    Class_Transaction_Wr.StartTransaction;
+    Class_StoredProc.StoredProcName:='J4_DT_AO_PL_MIS_TMP_DEL_BY_SES';
+    Class_StoredProc.ParamByName('key_session').AsInt64 := key_session_place_mission;
+    Class_StoredProc.Prepare;
+    Class_StoredProc.ExecProc;
+    Class_Transaction_Wr.Commit;
+
+    myform.ActionRefreshExecute(sender);
+    Myform.DataSetMain.Locate('ID_AO', id_ao, []);
+    close;
 end;
 
 procedure TfmAddChangeAvance.ActionEditExecute(Sender: TObject);
@@ -2607,9 +2887,10 @@ var
     name_kor_sch, name_fio, name_smeta, name_stat, name_r, name_k, name_sch, date_dog, num_dog, name_cust, title_sm, title_rz, title_st, title_kekv, title_sch, title_kor_sch, type_dog, reg_dog, tin, birthday : string;
     summa : double;
     num, main, i, kod_neos : integer;
-    id_raspred, id_prov, id_pprr, loc_id_last : int64;
+    id_raspred, id_prov, id_pprr, loc_id_last,id : int64;
     ssum : Currency;
-    name, s : string;
+    summaCost,summaPDVCost :Currency; //для витрат
+    name, s,comment : string;
 begin
     flag_na_aftoscroll := false;
     if my_m <> ShowAvance then
@@ -2865,6 +3146,31 @@ begin
                           RxMemoryDataRas.FieldByName('Id_prov').Value            := id_pprr;
                           RxMemoryDataRas.Post;
                       end;
+               end
+            end;
+
+            if PageControl1.ActivePage = TabSheet6 then
+            begin
+               if not RxMemoryDataCost.IsEmpty then
+               begin
+                   name         := RxMemoryDataCost.FieldByName('RxMemoryDataCostName').value;
+                   id           := RxMemoryDataCost.FieldByName('RxMemoryDataCostId').AsInteger;
+                   summaCost    := RxMemoryDataCost.FieldByName('RxMemoryDataCostSum').Value;
+                   summaPDVCost := RxMemoryDataCost.FieldByName('RxMemoryDataCostSumPDV').Value;
+                   comment      := RxMemoryDataCost.FieldByName('RxMemoryDataCostComment').asstring;
+
+                    if Show_Cost(self, myform.DatabaseMain, myform.TransactionRead,
+                                CHangeCost, id, summaCost, summaPDVCost, name, comment) then
+                    begin
+                        RxMemoryDataCost.Open;
+                        RxMemoryDataCost.Edit;
+                        RxMemoryDataCost.FieldByName('RxMemoryDataCostName').value       := NAME;
+                        RxMemoryDataCost.FieldByName('RxMemoryDataCostSum').value        := summaCost;
+                        RxMemoryDataCost.FieldByName('RxMemoryDataCostSumPDV').Value     := summaPDVCost;
+                        RxMemoryDataCost.FieldByName('RxMemoryDataCostComment').Value    := comment;
+                        RxMemoryDataCost.FieldByName('RxMemoryDataCostId').AsInteger     := ID;
+                        RxMemoryDataCost.Post;
+                    END;
                end
             end;
         end;
@@ -3231,6 +3537,28 @@ begin
                     end;
                 end;
             end;
+
+            //добавление витрат
+            Class_StoredProc.StoredProcName := 'J4_DT_AO_COST_DELETE';
+            Class_StoredProc.ParamByName('D_ID_AO').AsInt64   := id_ao;
+            Class_StoredProc.ExecProc;
+            if not RxMemoryDataCost.IsEmpty then
+              begin
+                  RxMemoryDataCost.First;
+                  while not RxMemoryDataCost.Eof do
+                  begin
+                      Class_StoredProc.StoredProcName:='J4_DT_AO_COST_INS';
+                      Class_StoredProc.Prepare;
+                      Class_StoredProc.ParamByName('ID_AO').AsInt64         := id_ao;
+                      Class_StoredProc.ParamByName('ID_SP_AO_COST').AsInt64 := RxMemoryDataCost.FieldByName('RxMemoryDataCostId').AsInteger;
+                      Class_StoredProc.ParamByName('SUMMA').AsDouble        := RxMemoryDataCost.FieldByName('RxMemoryDataCostSum').AsFloat;
+                      Class_StoredProc.ParamByName('SUMMA_PDV').AsDouble    := RxMemoryDataCost.FieldByName('RxMemoryDataCostSumPDV').AsFloat;
+                      Class_StoredProc.ParamByName('comment').AsString      := RxMemoryDataCost.FieldByName('RxMemoryDataCostComment').AsString;
+                      Class_StoredProc.ExecProc;
+                      RxMemoryDataCost.Next;
+                  end;
+              end;
+
             STRU.DBHANDLE      := myform.DatabaseMain.Handle;
             STRU.TRHANDLE      := Class_Transaction_Wr.Handle;
             STRU.KERNEL_ACTION := 1;
@@ -3362,19 +3690,41 @@ procedure TfmAddChangeAvance.cxCheckBoxKomClick(Sender: TObject);
 begin
     if  cxCheckBoxKom.Checked then
     begin
-        Panel5.Visible             := true;
-        cxDateEditFrom.Visible     := true;
-        cxDateEditTo.Visible       := true;
-        cxLabelFrom.Visible        := true;
-        cxLabelTo.Visible          := true;
-    end else
+        if (myform.show_date_kom = 1) then
+        begin
+          Panel5.Visible             := true;
+          cxDateEditFrom.Visible     := true;
+          cxDateEditTo.Visible       := true;
+          cxDateEditFrom.Enabled     := True;
+          cxDateEditTo.Enabled       := True;
+        end;
+
+        if (myform.show_place_mission_kom = 1) then
+        begin
+          Panel5.Visible             := true;
+          cxDateEditFrom.Visible     := true;
+          cxDateEditTo.Visible       := true;
+          cxDateEditFrom.Enabled     := False;
+          cxDateEditTo.Enabled       := False;
+          cxLabelFrom.Visible        := true;
+          cxLabelTo.Visible          := true;
+          cxPlaceMissionButtonEdit.visible := True;
+          cxPlaceMissionButton.Visible := True;
+          cxPlaceMissionLabel1.Visible := True;
+          cxPlaceMissionLabel2.Visible := True;
+        end;
+    end
+    else
     begin
         Panel5.Visible             := false;
         cxDateEditFrom.Visible     := false;
         cxDateEditTo.Visible       := false;
         cxLabelFrom.Visible        := false;
         cxLabelTo.Visible          := false;
-        //cxDateEnd.Date := date;
+        cxPlaceMissionButtonEdit.visible := false;
+        cxPlaceMissionButton.Visible := False;
+        cxPlaceMissionLabel1.Visible := False;
+        cxPlaceMissionLabel2.Visible := False;
     end;
 end;
 
@@ -3399,6 +3749,135 @@ begin
       name_type_doc          := viewform.DSetTypeDoc['name_type_doc_for_create_av_o'];
       ButtonEditTypeDoc.Text := name_type_doc;
     end;
+end;
+
+procedure TfmAddChangeAvance.cxPlaceMissionButtonEditPropertiesButtonClick(
+  Sender: TObject; AButtonIndex: Integer);
+var
+  ViewForm : TfmPlaceMissionForm;
+
+begin
+  viewform := TfmPlaceMissionForm.Create(Self);
+
+  viewform.key_session := key_session_place_mission;
+
+  viewform.Database                         := database;
+  viewform.TransactionRead.DefaultDatabase  := database;
+  viewform.TransactionWrite.DefaultDatabase := database;
+  viewform.pFIBStoredProc.Database          := database;
+  viewform.DataSetMain.Database             := database;
+  viewform.DataSetFind.Database             := database;
+  viewform.DSetPlaceMissionTMP.Database     := database;
+
+  viewform.pFIBStoredProc.Transaction         := viewform.TransactionWrite;
+  viewform.DataSetMain.Transaction            := viewform.TransactionRead;
+  viewform.DataSetFind.Transaction            := viewform.TransactionRead;
+  viewform.DSetPlaceMissionTMP.Transaction    := viewform.TransactionRead;
+
+  viewform.DataSetMain.Close;
+  viewform.DataSetMain.SelectSQL.Text:= 'select * from J4_SP_PLACE_MISSION';
+  viewform.DataSetMain.Open;
+
+  viewform.cxDBTreeMain.DataController.DataSource := ViewForm.DataSourceTree;
+  ViewForm.ToolButtonRefresh.Click;
+  viewform.ShowModal;
+
+  if (ViewForm.DSetPlaceMissionTMP['ARRAY_PLACE_MISSION'] = null) then
+    cxPlaceMissionButtonEdit.Text := ''
+  else
+    cxPlaceMissionButtonEdit.Text := ViewForm.DSetPlaceMissionTMP['ARRAY_PLACE_MISSION'];
+
+    {if (viewform.ModalResult = mrok)then
+    begin
+      id_type_doc            := StrToInt64(viewform.DSetTypeDoc.fbn('id_type_doc').AsString);
+      name_type_doc          := viewform.DSetTypeDoc['name_type_doc_for_create_av_o'];
+      ButtonEditTypeDoc.Text := name_type_doc;
+    end;   }
+end;
+
+procedure TfmAddChangeAvance.ClearBitBtnClick(Sender: TObject);
+begin
+  if (MessageBox(Handle,
+                 'Ви дійсно бажаєте видалити усі вибрані місця перебування у відрядженні?',
+                 'Увага!',
+                 mb_YesNO
+                 ) = mrYes)
+  then
+  begin
+    try
+      Class_Transaction_Wr.StartTransaction;
+      Class_StoredProc.StoredProcName := 'J4_DT_AO_PL_MIS_TMP_DEL_BY_SES';
+      Class_StoredProc.ParamByName('KEY_SESSION').AsInt64 := key_session_place_mission;
+      Class_StoredProc.ExecProc;
+      Class_Transaction_Wr.Commit;
+      cxPlaceMissionButtonEdit.Text := '';
+    except on E: Exception do
+      begin
+        Class_Transaction_Wr.Rollback;
+        ShowMessage(E.Message);
+      end;
+    end;
+  end;
+
+end;
+
+procedure TfmAddChangeAvance.cxPlaceMissionButtonClick(Sender: TObject);
+var
+  ViewForm : TfmPlaceMissionForm;
+
+begin
+  viewform := TfmPlaceMissionForm.Create(Self);
+
+  viewform.key_session := key_session_place_mission;
+
+  viewform.Database                         := database;
+  viewform.TransactionRead.DefaultDatabase  := database;
+  viewform.TransactionWrite.DefaultDatabase := database;
+  viewform.pFIBStoredProc.Database          := database;
+  viewform.DataSetMain.Database             := database;
+  viewform.DataSetFind.Database             := database;
+  viewform.DSetPlaceMissionTMP.Database     := database;
+
+  viewform.pFIBStoredProc.Transaction         := viewform.TransactionWrite;
+  viewform.DataSetMain.Transaction            := viewform.TransactionRead;
+  viewform.DataSetFind.Transaction            := viewform.TransactionRead;
+  viewform.DSetPlaceMissionTMP.Transaction    := viewform.TransactionRead;
+
+  viewform.DataSetMain.Close;
+  viewform.DataSetMain.SelectSQL.Text:= 'select * from J4_SP_PLACE_MISSION';
+  viewform.DataSetMain.Open;
+
+  viewform.cxDBTreeMain.DataController.DataSource := ViewForm.DataSourceTree;
+  ViewForm.ToolButtonRefresh.Click;
+  viewform.ShowModal;
+
+  if (ViewForm.DSetPlaceMissionTMP['ARRAY_PLACE_MISSION'] = null) then
+    cxPlaceMissionButtonEdit.Text := ''
+  else
+  begin
+    cxPlaceMissionButtonEdit.Text := ViewForm.DSetPlaceMissionTMP['ARRAY_PLACE_MISSION'];
+    cxDateEditFrom.Date := ViewForm.min_date_place_mission;
+    cxDateEditTo.Date := ViewForm.max_date_place_mission;
+  end;  
+
+
+    {if (viewform.ModalResult = mrok)then
+    begin
+      id_type_doc            := StrToInt64(viewform.DSetTypeDoc.fbn('id_type_doc').AsString);
+      name_type_doc          := viewform.DSetTypeDoc['name_type_doc_for_create_av_o'];
+      ButtonEditTypeDoc.Text := name_type_doc;
+    end;   }
+end;
+
+procedure TfmAddChangeAvance.FormClose(Sender: TObject;
+  var Action: TCloseAction);
+begin
+    Class_Transaction_Wr.StartTransaction;
+    Class_StoredProc.StoredProcName:='J4_DT_AO_PL_MIS_TMP_DEL_BY_SES';
+    Class_StoredProc.ParamByName('key_session').AsInt64 := key_session_place_mission;
+    Class_StoredProc.Prepare;
+    Class_StoredProc.ExecProc;
+    Class_Transaction_Wr.Commit;
 end;
 
 end.

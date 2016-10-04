@@ -1,8 +1,8 @@
 object fmAvanceShowP: TfmAvanceShowP
   Left = 407
   Top = 365
-  Width = 531
-  Height = 233
+  Width = 449
+  Height = 241
   Caption = 'fmAvanceShowP'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -12,11 +12,12 @@ object fmAvanceShowP: TfmAvanceShowP
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
+  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object cxButton1: TcxButton
     Left = 208
-    Top = 156
+    Top = 172
     Width = 107
     Height = 25
     Action = ActionPrint
@@ -61,7 +62,7 @@ object fmAvanceShowP: TfmAvanceShowP
     Left = 8
     Top = 8
     Width = 417
-    Height = 137
+    Height = 153
     Alignment = alTopLeft
     TabOrder = 1
     object cxSpinEdit1: TcxSpinEdit
@@ -118,7 +119,7 @@ object fmAvanceShowP: TfmAvanceShowP
     end
     object cxCheckBox3: TcxCheckBox
       Left = 8
-      Top = 60
+      Top = 62
       Width = 241
       Height = 21
       Properties.DisplayUnchecked = 'False'
@@ -144,16 +145,25 @@ object fmAvanceShowP: TfmAvanceShowP
     end
     object cxCheckBox4: TcxCheckBox
       Left = 8
-      Top = 80
+      Top = 82
       Width = 241
       Height = 21
       Properties.DisplayUnchecked = 'False'
       TabOrder = 9
     end
+    object cxCheckBox5: TcxCheckBox
+      Left = 8
+      Top = 104
+      Width = 209
+      Height = 21
+      Properties.DisplayUnchecked = 'False'
+      Properties.Caption = #1044#1088#1091#1082#1091#1074#1072#1090#1080' '#1084#1110#1089#1094#1103' '#1087#1077#1088#1077#1073#1091#1074#1072#1085#1085#1103
+      TabOrder = 10
+    end
   end
   object cxCheckBoxShow: TcxCheckBox
     Left = 16
-    Top = 118
+    Top = 134
     Width = 321
     Height = 21
     Properties.DisplayUnchecked = 'False'
@@ -162,7 +172,7 @@ object fmAvanceShowP: TfmAvanceShowP
   end
   object cxButton2: TcxButton
     Left = 325
-    Top = 156
+    Top = 172
     Width = 99
     Height = 25
     Action = ActionClose

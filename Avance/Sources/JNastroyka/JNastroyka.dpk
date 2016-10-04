@@ -27,9 +27,9 @@ package JNastroyka;
 requires
   rtl,
   vcl,
-  LoadDog,
   Globals,
-  AlBPLMyLoad;
+  AlBPLMyLoad,
+  LoadDog;
 
 contains
   JNastroyka_pas in 'JNastroyka_pas.pas' {fmJNastroyka};

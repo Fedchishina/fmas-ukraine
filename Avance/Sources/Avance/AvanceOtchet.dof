@@ -101,10 +101,10 @@ DebugSourceDirs=
 UsePackages=0
 [Parameters]
 RunParams=
-HostApplication=D:\FMAS-WIN\AvanseOtchet.exe
+HostApplication=E:\WORK_FMAS\FMAS Ukraine\2015-10-27 Application\Application\AvanseOtchet.exe
 Launcher=
 UseLauncher=0
-DebugCWD=D:\FMAS-WIN\AvanseOtchet.exe
+DebugCWD=E:\WORK_FMAS\FMAS Ukraine\2015-10-27 Application\Application\AvanseOtchet.exe
 [Language]
 ActiveLang=
 ProjectLang=
@@ -139,19 +139,10 @@ C:\Program Files\Developer Express Inc\ExpressLayout Control\Delphi 7\Lib\dxLayo
 [HistoryLists\hlUnitAliases]
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
-[HistoryLists\hlSearchPath]
-Count=1
-Item0=..\..\
-[HistoryLists\hlOutputDirectorry]
-Count=1
-Item0=..\..\
 [HistoryLists\hlBPLOutput]
-Count=3
+Count=1
 Item0=..\..\
-Item1=..\
-Item2=..\..\..\
 [HistoryLists\hlDCPOutput]
-Count=3
+Count=2
 Item0=..\..\
-Item1=..\
-Item2=..\..\..\
+Item1=.\..\

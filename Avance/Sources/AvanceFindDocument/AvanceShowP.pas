@@ -31,9 +31,11 @@ type
     cxCheckBox4: TcxCheckBox;
     cxLabel4: TcxLabel;
     cxSpinEdit4: TcxSpinEdit;
+    cxCheckBox5: TcxCheckBox;
     procedure LoadCaption;
     procedure ActionCloseExecute(Sender: TObject);
     procedure ActionPrintExecute(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
   public
     myform : TfmAvanceResultFindForm;
@@ -53,12 +55,17 @@ var
     i : integer;
 begin
     T := TfmAvanceShowP.Create(nil);
+    if (m.is_visible_checkbox_place_mission = 1) then
+      T.cxCheckBox5.Visible := True
+    else
+      T.cxCheckBox5.Visible := False;
+    T.cxCheckBox5.Checked := False;
     T.LoadCaption;
 
     if T.ShowModal = mrOk then
     begin
         if T.cxCheckBoxShow.Checked then i := 1 else i := 0;
-        Res := VarArrayCreate([0, 3],varVariant);
+        Res := VarArrayCreate([0, 4],varVariant);
         if T.cxCheckBox1.Checked
             then Res[0]:=VarArrayOf([1, T.cxSpinEdit1.Value, i])
             else Res[0]:=VarArrayOf([0, 0, i]);
@@ -71,6 +78,9 @@ begin
         if T.cxCheckBox4.Checked
             then Res[3]:=VarArrayOf([1, T.cxSpinEdit4.Value, i])
             else Res[3]:=VarArrayOf([0, 0, i]);
+        if T.cxCheckBox5.Checked
+            then Res[4]:= '1'
+            else Res[4]:= '0';
         Result  := true;
     end
     else
@@ -103,6 +113,11 @@ end;
 procedure TfmAvanceShowP.ActionPrintExecute(Sender: TObject);
 begin
      ModalResult := mrOK;
+end;
+
+procedure TfmAvanceShowP.FormCreate(Sender: TObject);
+begin
+  cxCheckBox5.Checked := False;
 end;
 
 end.

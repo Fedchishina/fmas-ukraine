@@ -7,7 +7,8 @@ uses
   Dialogs, cxLookAndFeelPainters, StdCtrls, cxButtons, cxRadioGroup,
   cxTextEdit, cxMaskEdit, cxDropDownEdit, cxCalendar, cxCheckBox,
   cxGroupBox, cxControls, cxContainer, cxEdit, cxButtonEdit, cxLabel,
-  ImgList, ActnList, fibDataBase, pFIBDatabase, DB, FIBDataSet, pFIBDataSet, Un_R_file_Alex, GlobalSPR;
+  ImgList, ActnList, fibDataBase, pFIBDatabase, DB, FIBDataSet, pFIBDataSet,
+  Un_R_file_Alex, GlobalSPR, PlaceMissionFindForm;
 
 type
   TSchA = record
@@ -79,6 +80,8 @@ type
     cxDateKomTo: TcxDateEdit;
     cxLabelFrom: TcxLabel;
     cxLabelTo: TcxLabel;
+    cxCheckBoxKomPlace: TcxCheckBox;
+    cxButtonEditPlaceMission: TcxButtonEdit;
     procedure cxTextEditFromKeyPress(Sender: TObject; var Key: Char);
     procedure cxTextEditToKeyPress(Sender: TObject; var Key: Char);
     procedure cxDateEditFromKeyPress(Sender: TObject; var Key: Char);
@@ -120,14 +123,17 @@ type
     procedure cxCheckBoxKomClick(Sender: TObject);
     procedure cxTextEditFromFocusChanged(Sender: TObject);
     procedure cxTextEditToFocusChanged(Sender: TObject);
+    procedure cxCheckBoxKomPlaceClick(Sender: TObject);
+    procedure cxButtonEditPlaceMissionPropertiesButtonClick(
+      Sender: TObject; AButtonIndex: Integer);
   private
     Owner : TComponent;
     flag_fio, flag_note, flag_number : boolean;
   public
     ResSch : TResSchA;
     ResKorSch : TResSchA;
-    d : TPfibDataBase;
-    id_user, id_man, id_smeta, id_razd, id_state, id_kekv : int64;
+    d : TPfibDataBase;  
+    id_user, id_man, id_smeta, id_razd, id_state, id_kekv, id_place_mission : int64;
     constructor Create(AOwner : TComponent; id_us : int64; DB : TpFIBDatabase); reintroduce; overload;
 //    constructor Create(AOwner: TComponent; mainform: TMainDocClass; m : TfmModeShowDoc); reintroduce; overload;
   end;
@@ -174,7 +180,8 @@ begin
     cxTextEditFrom.Text := '0';
     cxTextEditTo.Text   := '1000000000';
     id_user := id_us;
-
+    cxCheckBoxKomPlace.Checked := False;
+    cxButtonEditPlaceMission.Visible := False;
 
     pFIBDataSet1.Close;
     pFIBDataSet1.SQLs.SelectSQL.Text := 'SELECT * FROM J4_INI';
@@ -187,6 +194,17 @@ begin
     end else
     begin
         cxCheckBoxKom.Visible  := false;
+    end;
+
+    if pFIBDataSet1.FieldByName('J4_IS_ADD_PLACE_MISSION_IN_AO').AsInteger = 1 then
+    begin
+        cxCheckBoxKom.Visible  := true;
+        cxCheckBoxKomPlace.Visible := True;
+        cxButtonEditPlaceMission.Text := '';
+    end else
+    begin
+        cxCheckBoxKom.Visible  := false;
+        cxCheckBoxKomPlace.Visible := False;  
     end;
 
     pFIBDataSet1.Close;
@@ -354,6 +372,12 @@ var
     mes    : string;
     flag   : boolean;
 begin
+    if (cxCheckBoxKomPlace.Checked)and(id_place_mission = 0) then
+    begin
+      ShowMessage('Заповніть фільтр "місце перебування" або зніміть галочку.');
+      Exit;
+    end;
+
     flag := false;
     mes := '';
     
@@ -897,6 +921,57 @@ begin
         end;
         if (cxTextEditFrom.Text = '') and (cxTextEditTo.Text = '') then cxCheckBoxSumma.Checked := false;
     end;
+end;
+
+procedure TfmAvanceFindForm.cxCheckBoxKomPlaceClick(Sender: TObject);
+begin
+    id_place_mission := 0;
+    cxButtonEditPlaceMission.Text := '';
+    if  cxCheckBoxKomPlace.Checked then
+    begin
+      cxButtonEditPlaceMission.Visible := true;
+    end
+    else
+    begin
+      cxButtonEditPlaceMission.Visible := false;
+    end;
+end;
+
+procedure TfmAvanceFindForm.cxButtonEditPlaceMissionPropertiesButtonClick(
+  Sender: TObject; AButtonIndex: Integer);
+var
+  ViewForm : TfmPlaceMissionFindForm;
+begin
+  ViewForm := TfmPlaceMissionFindForm.Create(Self);
+  viewform.Database                         := d;
+  viewform.TransactionRead.DefaultDatabase  := d;
+  viewform.TransactionWrite.DefaultDatabase := d;
+  viewform.pFIBStoredProc.Database          := d;
+  viewform.DataSetMain.Database             := d;
+  viewform.DataSetFind.Database             := d;
+
+  viewform.pFIBStoredProc.Transaction         := viewform.TransactionWrite;
+  viewform.DataSetMain.Transaction            := viewform.TransactionRead;
+  viewform.DataSetFind.Transaction            := viewform.TransactionRead;
+
+  viewform.DataSetMain.Close;
+  viewform.DataSetMain.SelectSQL.Text:= 'select * from J4_SP_PLACE_MISSION';
+  viewform.DataSetMain.Open;
+
+  viewform.cxDBTreeMain.DataController.DataSource := ViewForm.DataSourceTree;
+  ViewForm.ToolButtonRefresh.Click;
+  viewform.ShowModal;
+
+  if (ViewForm.ModalResult = mrOk) then
+  begin
+    cxButtonEditPlaceMission.Text := ViewForm.DataSetMain['NAME'];
+    id_place_mission := ViewForm.DataSetMain['id_place_mission'];
+  end
+  else
+  begin
+    cxButtonEditPlaceMission.Text := '';
+    id_place_mission := 0;
+  end; 
 end;
 
 end.

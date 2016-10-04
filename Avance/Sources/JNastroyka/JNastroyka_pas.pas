@@ -88,6 +88,10 @@ type
     CheckBox_IS_SELECT_TYPE_DOC: TcxCheckBox;
     CheckBox_IS_VIEW_MO_ZVED_ZVIT: TcxCheckBox;
     Memo_IS_VIEW_MO_ZVED_ZVIT: TcxMemo;
+    CheckBox_is_add_costs_in_ao: TcxCheckBox;
+    Memo_is_add_costs_in_ao: TcxMemo;
+    memo_is_add_place_mission_in_ao: TcxMemo;
+    CheckBox_is_add_place_mission_in_ao: TcxCheckBox;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -203,6 +207,8 @@ begin
         Memo_J4_IS_PRINT_NAKAZ_IN_VEDOM_AV_O.Text := 'Друкувати № та дату наказу у реєстрі відомостей, створених через ав.звіти';
         Memo_IS_SELECT_TYPE_DOC_AV_O.Text        := 'Обирати тип документа при створенні авансового звіту';
         Memo_IS_VIEW_MO_ZVED_ZVIT.Text           := 'Формування меморіального ордеру (зведена)';
+        Memo_is_add_costs_in_ao.Text             := 'Вкладка "ПДВ" в авансовому звіті';
+        memo_is_add_place_mission_in_ao.Text     := 'Можливість при додаванні ав.зв. заповнювати міста відрядження';
         {//}
 {~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Загрузка данных из БД при старте~~~~~~~~~~~~~~~~~}
         pFIBDataSet.Close;
@@ -319,6 +325,24 @@ begin
                 else
                   begin
                     CheckBox_IS_VIEW_MO_ZVED_ZVIT.Checked := False;
+                  end;
+
+                if pFIBDataset.FBN('j4_is_add_costs_in_ao').asinteger = 1 then
+                  begin
+                   CheckBox_is_add_costs_in_ao .Checked := true;
+                  end
+                else
+                  begin
+                    CheckBox_is_add_costs_in_ao.Checked := False;
+                  end;
+
+                if pFIBDataset.FBN('J4_IS_ADD_PLACE_MISSION_IN_AO').asinteger = 1 then
+                  begin
+                   CheckBox_is_add_place_mission_in_ao .Checked := true;
+                  end
+                else
+                  begin
+                    CheckBox_is_add_place_mission_in_ao.Checked := False;
                   end;
 
                 if pFIBDataset.FBN('J4_IS_DEFAULT_COMMENT_VEDOMOST').asinteger = 1 then
@@ -748,6 +772,16 @@ begin
                         SQL.Add(' J4_IS_VIEW_MO_ZVED_ZVIT = 1,')
                 else
                         SQL.Add(' J4_IS_VIEW_MO_ZVED_ZVIT = 0,');
+
+                if(CheckBox_is_add_costs_in_ao.Checked = True) then
+                        SQL.Add(' j4_is_add_costs_in_ao = 1,')
+                else
+                        SQL.Add(' j4_is_add_costs_in_ao = 0,');
+
+                if(CheckBox_is_add_place_mission_in_ao.Checked = True) then
+                        SQL.Add(' j4_is_add_place_mission_in_ao = 1,')
+                else
+                        SQL.Add(' j4_is_add_place_mission_in_ao = 0,');
 
                 if(CheckBox_J4_IS_DEFAULT_COMMENT_VEDOMOST.Checked = True) then
                 begin

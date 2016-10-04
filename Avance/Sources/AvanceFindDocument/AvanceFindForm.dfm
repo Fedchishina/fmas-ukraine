@@ -1,8 +1,8 @@
 object fmAvanceFindForm: TfmAvanceFindForm
-  Left = 555
-  Top = 180
+  Left = 507
+  Top = 64
   Width = 568
-  Height = 614
+  Height = 630
   Caption = 'fmAvanceFindForm'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -19,10 +19,10 @@ object fmAvanceFindForm: TfmAvanceFindForm
   PixelsPerInch = 96
   TextHeight = 13
   object cxRadioGroup1: TcxRadioGroup
-    Left = 64
+    Left = 8
     Top = 430
-    Width = 481
-    Height = 79
+    Width = 537
+    Height = 115
     Properties.Items = <>
     TabOrder = 0
     Caption = ''
@@ -260,8 +260,8 @@ object fmAvanceFindForm: TfmAvanceFindForm
     end
   end
   object cxRadioButtonAll: TcxRadioButton
-    Left = 88
-    Top = 487
+    Left = 80
+    Top = 513
     Width = 225
     Height = 17
     Caption = #1044#1045#1041#1045#1058#1054#1042#1030' '#1090#1072' '#1050#1056#1045#1044#1048#1058#1054#1042#1030' '#1076#1086#1082#1091#1084#1077#1085#1090#1080
@@ -270,16 +270,16 @@ object fmAvanceFindForm: TfmAvanceFindForm
     TabStop = True
   end
   object cxRadioButtonPrihod: TcxRadioButton
-    Left = 88
-    Top = 441
+    Left = 80
+    Top = 445
     Width = 225
     Height = 17
     Caption = #1058#1110#1083#1100#1082#1080' '#1044#1045#1041#1045#1058#1054#1042#1030' '#1076#1086#1082#1091#1084#1077#1085#1090#1080
     TabOrder = 3
   end
   object cxRadioButton3: TcxRadioButton
-    Left = 88
-    Top = 465
+    Left = 80
+    Top = 481
     Width = 225
     Height = 17
     Caption = #1058#1110#1083#1100#1082#1080' '#1050#1056#1045#1044#1048#1058#1048#1042#1030' '#1076#1086#1082#1091#1084#1077#1085#1090#1080
@@ -287,7 +287,7 @@ object fmAvanceFindForm: TfmAvanceFindForm
   end
   object cxGroupBox2: TcxGroupBox
     Left = 11
-    Top = 513
+    Top = 545
     Width = 537
     Height = 46
     Alignment = alTopLeft
@@ -594,6 +594,31 @@ object fmAvanceFindForm: TfmAvanceFindForm
     TabOrder = 12
     Visible = False
     Caption = #1076#1086
+  end
+  object cxCheckBoxKomPlace: TcxCheckBox
+    Left = 312
+    Top = 491
+    Width = 209
+    Height = 21
+    Properties.DisplayUnchecked = 'False'
+    Properties.Caption = #1079#1072' '#1084#1110#1089#1094#1077#1084' '#1074#1110#1076#1088#1103#1076#1078#1077#1085#1085#1103
+    TabOrder = 13
+    OnClick = cxCheckBoxKomPlaceClick
+  end
+  object cxButtonEditPlaceMission: TcxButtonEdit
+    Left = 328
+    Top = 512
+    Width = 201
+    Height = 21
+    Properties.Buttons = <
+      item
+        Default = True
+        Kind = bkEllipsis
+      end>
+    Properties.ReadOnly = True
+    Properties.OnButtonClick = cxButtonEditPlaceMissionPropertiesButtonClick
+    TabOrder = 14
+    Visible = False
   end
   object ActionList1: TActionList
     Images = ImageList1

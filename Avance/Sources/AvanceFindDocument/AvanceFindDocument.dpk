@@ -36,12 +36,29 @@ requires
   fs7,
   frx7,
   frxDB7,
-  frxe7;
+  frxe7,
+  vcl,
+  rtl,
+  dbrtl,
+  cxLibraryVCLD7,
+  dxThemeD7,
+  cxEditorsVCLD7,
+  cxDataD7,
+  vcljpg,
+  vcldb,
+  cxGridVCLD7,
+  cxExportVCLD7,
+  cxCommonEditingVCLD7,
+  cxTreeListVCLD7,
+  FIBPlus7,
+  visualdbclx,
+  visualclx;
 
 contains
   AvanceFindForm in 'AvanceFindForm.pas' {fmAvanceFindForm},
   AvanceResultFindForm in 'AvanceResultFindForm.pas' {fmAvanceResultFindForm},
   AvanceSchSelect in 'AvanceSchSelect.pas' {fmAvanceSchSelect},
-  AvanceShowP in 'AvanceShowP.pas' {fmAvanceShowP};
+  AvanceShowP in 'AvanceShowP.pas' {fmAvanceShowP},
+  PlaceMissionFindForm in 'PlaceMissionFindForm.pas' {fmPlaceMissionFindForm};
 
 end.

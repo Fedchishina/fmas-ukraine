@@ -108,6 +108,7 @@ object fmAvanceMainFormSpravka: TfmAvanceMainFormSpravka
             DataBinding.FieldName = 'NUM_DOC'
           end
           object cxGrid3DBBandedTableView1DBBandedColumn2: TcxGridDBBandedColumn
+            Caption = #1044#1072#1090#1072' '#1076#1086#1082#1091#1084#1077#1085#1090#1072
             Width = 58
             Position.BandIndex = 0
             Position.ColIndex = 2
@@ -150,6 +151,13 @@ object fmAvanceMainFormSpravka: TfmAvanceMainFormSpravka
             Position.ColIndex = 0
             Position.RowIndex = 0
             DataBinding.FieldName = 'NAME'
+          end
+          object cxGrid3DBBandedTableView1DBBandedColumn8: TcxGridDBBandedColumn
+            Caption = #1044#1072#1090#1072' '#1087#1088#1086#1074#1086#1076#1082#1080
+            Position.BandIndex = 0
+            Position.ColIndex = 3
+            Position.RowIndex = 0
+            DataBinding.FieldName = 'DATE_PROV'
           end
         end
         object cxGrid3BandedTableView1: TcxGridBandedTableView
@@ -237,6 +245,7 @@ object fmAvanceMainFormSpravka: TfmAvanceMainFormSpravka
             DataBinding.FieldName = 'NUM_DOC'
           end
           object cxGrid4DBBandedTableView1DBBandedColumn2: TcxGridDBBandedColumn
+            Caption = #1044#1072#1090#1072' '#1076#1086#1082#1091#1084#1077#1085#1090#1072
             Width = 55
             Position.BandIndex = 0
             Position.ColIndex = 2
@@ -280,6 +289,13 @@ object fmAvanceMainFormSpravka: TfmAvanceMainFormSpravka
             Position.ColIndex = 2
             Position.RowIndex = 0
             DataBinding.FieldName = 'S_R_S_K'
+          end
+          object cxGrid4DBBandedTableView1DBBandedColumn8: TcxGridDBBandedColumn
+            Caption = #1044#1072#1090#1072' '#1087#1088#1086#1074#1086#1076#1082#1080
+            Position.BandIndex = 0
+            Position.ColIndex = 3
+            Position.RowIndex = 0
+            DataBinding.FieldName = 'DATE_PROV'
           end
         end
         object cxGrid4Level1: TcxGridLevel
@@ -1939,51 +1955,6 @@ object fmAvanceMainFormSpravka: TfmAvanceMainFormSpravka
     Left = 210
     Top = 361
     poSQLINT64ToBCD = True
-    object DataSetDebetSUMMA: TFIBBCDField
-      FieldName = 'SUMMA'
-      Size = 2
-      RoundByScale = True
-    end
-    object DataSetDebetKOD_SCH: TFIBStringField
-      FieldName = 'KOD_SCH'
-      Size = 30
-      EmptyStrToNull = True
-    end
-    object DataSetDebetDATE_DOC: TFIBDateField
-      FieldName = 'DATE_DOC'
-    end
-    object DataSetDebetNUM_DOC: TFIBStringField
-      FieldName = 'NUM_DOC'
-      Size = 120
-      EmptyStrToNull = True
-    end
-    object DataSetDebetNAME: TFIBStringField
-      FieldName = 'NAME'
-      Size = 25
-      EmptyStrToNull = True
-    end
-    object DataSetDebetNUM_SCH_KOR: TFIBStringField
-      FieldName = 'NUM_SCH_KOR'
-      Size = 30
-      EmptyStrToNull = True
-    end
-    object DataSetDebetSM_KOD: TFIBIntegerField
-      FieldName = 'SM_KOD'
-    end
-    object DataSetDebetRAZ_KOD: TFIBIntegerField
-      FieldName = 'RAZ_KOD'
-    end
-    object DataSetDebetST_KOD: TFIBIntegerField
-      FieldName = 'ST_KOD'
-    end
-    object DataSetDebetKEKV_KOD: TFIBIntegerField
-      FieldName = 'KEKV_KOD'
-    end
-    object DataSetDebetS_R_S_K: TFIBStringField
-      FieldName = 'S_R_S_K'
-      Size = 30
-      EmptyStrToNull = True
-    end
   end
   object DataSetKredit: TpFIBDataSet
     Database = Database
@@ -1995,51 +1966,6 @@ object fmAvanceMainFormSpravka: TfmAvanceMainFormSpravka
     Left = 451
     Top = 420
     poSQLINT64ToBCD = True
-    object DataSetKreditSUMMA: TFIBBCDField
-      FieldName = 'SUMMA'
-      Size = 2
-      RoundByScale = True
-    end
-    object DataSetKreditKOD_SCH: TFIBStringField
-      FieldName = 'KOD_SCH'
-      Size = 30
-      EmptyStrToNull = True
-    end
-    object DataSetKreditDATE_DOC: TFIBDateField
-      FieldName = 'DATE_DOC'
-    end
-    object DataSetKreditNUM_DOC: TFIBStringField
-      FieldName = 'NUM_DOC'
-      Size = 120
-      EmptyStrToNull = True
-    end
-    object DataSetKreditNAME: TFIBStringField
-      FieldName = 'NAME'
-      Size = 25
-      EmptyStrToNull = True
-    end
-    object DataSetKreditNUM_SCH_KOR: TFIBStringField
-      FieldName = 'NUM_SCH_KOR'
-      Size = 30
-      EmptyStrToNull = True
-    end
-    object DataSetKreditSM_KOD: TFIBIntegerField
-      FieldName = 'SM_KOD'
-    end
-    object DataSetKreditRAZ_KOD: TFIBIntegerField
-      FieldName = 'RAZ_KOD'
-    end
-    object DataSetKreditST_KOD: TFIBIntegerField
-      FieldName = 'ST_KOD'
-    end
-    object DataSetKreditKEKV_KOD: TFIBIntegerField
-      FieldName = 'KEKV_KOD'
-    end
-    object DataSetKreditS_R_S_K: TFIBStringField
-      FieldName = 'S_R_S_K'
-      Size = 30
-      EmptyStrToNull = True
-    end
   end
   object DataSetSelectSystem: TpFIBDataSet
     Database = Database

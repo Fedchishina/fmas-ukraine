@@ -1,6 +1,6 @@
 object fmAvanceOtchet: TfmAvanceOtchet
-  Left = 403
-  Top = 149
+  Left = 378
+  Top = 307
   Width = 915
   Height = 572
   Color = clBtnFace
@@ -817,6 +817,11 @@ object fmAvanceOtchet: TfmAvanceOtchet
     object ActionFormReestr: TAction
       Caption = #1056#1077#1108#1089#1090#1088#1080
       ImageIndex = 11
+    end
+    object ActionPrintReestrPDV: TAction
+      Caption = 'ActionPrintReestrPDV'
+      ImageIndex = 10
+      OnExecute = ActionPrintReestrPDVExecute
     end
   end
   object ImageList: TImageList
@@ -3382,6 +3387,10 @@ object fmAvanceOtchet: TfmAvanceOtchet
     end
     object PrintReestr: TMenuItem
       Action = ActionPrintReestr
+    end
+    object N1: TMenuItem
+      Action = ActionPrintReestrPDV
+      Caption = #1088#1077#1108#1089#1090#1088' '#1072#1074#1072#1085#1089#1086#1074#1080#1093' '#1079#1074#1110#1090#1110#1074' ('#1055#1044#1042')'
     end
   end
   object DataSetDates: TpFIBDataSet

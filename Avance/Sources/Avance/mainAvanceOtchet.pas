@@ -260,6 +260,8 @@ type
     DataSetDates: TpFIBDataSet;
     DSetIni: TpFIBDataSet;
     cxGridMainDBTableView1DBColumn8: TcxGridDBColumn;
+    N1: TMenuItem;
+    ActionPrintReestrPDV: TAction;
     procedure ActionExitExecute(Sender: TObject);
     procedure cxCheckBoxFromClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -280,6 +282,7 @@ type
     procedure ActionClonExecute(Sender: TObject);
     procedure ActionPrintFioExecute(Sender: TObject);
     procedure ActionPrintReestrExecute(Sender: TObject);
+    procedure ActionPrintReestrPDVExecute(Sender: TObject);
   private
     myclass : TMainClassAvance;
     main_m : TfmMode;
@@ -295,16 +298,18 @@ type
     id_user   : integer;
     prihod, sel_all : smallint;
     show_debet, ras, show_shablon, id_oper, tn : integer;
-    add_new_alg, show_neosn_prov, show_date_kom : Smallint;
+    add_new_alg, show_neosn_prov, show_date_kom, show_place_mission_kom : Smallint;
     id_prov_vedom, id_sm, id_st, id_razd, id_kekv, id_man, id_osn_sch, id_kor_sch : int64;
     sum_vedomost : double;
     smeta_kod, st_kod, raz_kod, kekv_kod, title_sm, title_raz, title_st, title_kod, fio_man, tin, kod_sch, title_sch, sch_osn_num, sch_osn_title : string;
+    add_costs_in_ao_visible :Integer;// признак видимости третьей вкладки "Витрати" при добавлении авансового отчета
     constructor Create(AOwner: TComponent; mclass: TMainClassAvance; DB:{ TISC_DB_HANDLE}TpFIBDatabase; m : TfmMode); reintroduce; overload;
     destructor Destroy; override;
   end;
 
 implementation
-uses AddChangeAvance, PrihodRashodAvance, DateUtils, Accmgmt, Un_Progress_form, PrintReestr, Un_lo_file_Alex;
+uses AddChangeAvance, PrihodRashodAvance, DateUtils, Accmgmt, Un_Progress_form,
+  PrintReestr, PrintReestrPDV,Un_lo_file_Alex;
 {$R *.dfm}
 
 constructor TfmAvanceOtchet.Create(AOwner: TComponent;  mclass: TMainClassAvance; DB: {TISC_DB_HANDLE}TpFIBDatabase; m: TfmMode);
@@ -361,6 +366,7 @@ begin
     DataSetSelect.Close;
     DataSetSelect.SQLs.SelectSQL.Text := 'SELECT * FROM J4_INI';
     DataSetSelect.Open;
+    add_costs_in_ao_visible := DataSetSelect.FieldByName('j4_is_add_costs_in_ao').AsInteger;
     add_new_alg      := DataSetSelect.FieldByName('FLAG_NEW_ALGORITHM').AsInteger;
     date_new_alg     := DataSetSelect.FieldByName('DATE_NEW_ALGORITHM').AsDateTime;
     show_shablon     := DataSetSelect.FieldByName('SHOW_SHABLONS').AsInteger;
@@ -372,6 +378,9 @@ begin
         then show_date_kom := 1
         else show_date_kom :=  DataSetSelect.FieldByName('NO_VIS_DATE_KOM').AsInteger;
 
+     if DataSetSelect.FieldByName('J4_IS_ADD_PLACE_MISSION_IN_AO').AsInteger = 1
+        then show_place_mission_kom := 1
+        else show_place_mission_kom := 0;
 
     show_debet       := DataSetSelect.FieldByName('SHOW_DEBET').AsInteger;
 
@@ -597,6 +606,7 @@ var
     error    : integer;
     ViewForm : TfmSelectTypeDoc;
 begin
+
     error := Accmgmt.fibCheckPermission('/ROOT/JO4/Work_j4/Work_doc_j4/Avance_otchet','Add');
     if error <> 0 then
     begin
@@ -650,12 +660,43 @@ begin
 
     if (viewform.ModalResult = mrok)then
     begin
+
       T := TfmAddChangeAvance.Create(self, self, myclass, DatabaseMain, AddAvance, ras, kod_system, id_system, 0, 0);
+      //если в настроечной таблице j4_ini разрешено - высвечиваем вкладку "Витрати"
+      if (add_costs_in_ao_visible = 1)then
+        t.PageControl1.Pages[2].TabVisible := True
+      else
+      t.PageControl1.Pages[2].TabVisible := False;
+
+      if (show_place_mission_kom = 1) then //если в настроечной таблице j4_ini разрешено выбирать места командировки
+      begin
+        t.key_session_place_mission := DatabaseMain.Gen_Id('GEN_J4_DT_AO_PLACE_MIS_TMP', 1);
+        t.cxDateEditFrom.Enabled    := False;
+        t.cxDateEditTo.Enabled      := False;
+      end
+      else
+      begin
+        t.key_session_place_mission := 0;
+        t.cxDateEditFrom.Enabled    := True;
+        t.cxDateEditTo.Enabled      := True;
+      end;
+
+      t.cxPlaceMissionButtonEdit.Visible := false;
+      t.cxPlaceMissionButton.Visible := False;
+      t.cxPlaceMissionLabel1.Visible := False;
+      t.cxPlaceMissionLabel2.Visible := False;
+
+
       t.is_select_type_doc := 1; //тип договора был выбран
       T.id_type_doc        := StrToInt64(ViewForm.DSetTypeDoc.fbn('id_type_doc').asstring);
       T.name_type_doc      := ViewForm.DSetTypeDoc['name_type_doc_for_create_av_o'];
       t.ButtonEditTypeDoc.Text := T.name_type_doc;
       t.ButtonEditTypeDoc.Enabled := True;
+      //если в настроечной таблице j4_ini разрешено - высвечиваем вкладку "Витрати"
+      if (add_costs_in_ao_visible = 1)then
+        t.PageControl1.Pages[2].TabVisible := True
+      else
+        t.PageControl1.Pages[2].TabVisible := False;
       T.ShowModal;
       T.Free;
       id_oper := 0;
@@ -664,9 +705,38 @@ begin
   else //если тип документа не нужно выбирать
   begin
     T := TfmAddChangeAvance.Create(self, self, myclass, DatabaseMain, AddAvance, ras, kod_system, id_system, 0, 0);
+    //если в настроечной таблице j4_ini разрешено - высвечиваем вкладку "Витрати"
+    if (add_costs_in_ao_visible = 1)then
+      t.PageControl1.Pages[2].TabVisible := True
+    else
+      t.PageControl1.Pages[2].TabVisible := False;
+
+    if (show_place_mission_kom = 1) then //если в настроечной таблице j4_ini разрешено выбирать места командировки
+    begin
+      t.key_session_place_mission := DatabaseMain.Gen_Id('GEN_J4_DT_AO_PLACE_MIS_TMP', 1);
+      t.cxDateEditFrom.Enabled    := False;
+      t.cxDateEditTo.Enabled      := False;
+    end
+    else
+    begin
+      t.key_session_place_mission := 0;
+      t.cxDateEditFrom.Enabled    := True;
+      t.cxDateEditTo.Enabled      := True;
+    end;
+
+    t.cxPlaceMissionButtonEdit.Visible := false;
+    t.cxPlaceMissionButton.Visible := False;
+    t.cxPlaceMissionLabel1.Visible := False;
+    t.cxPlaceMissionLabel2.Visible := False;
+
     t.is_select_type_doc := 0;
     t.ButtonEditTypeDoc.Enabled := False;
     t.ButtonEditTypeDoc.Text := 'Авансовий звіт';
+    //если в настроечной таблице j4_ini разрешено - высвечиваем вкладку "Витрати"
+      if (add_costs_in_ao_visible = 1)then
+        t.PageControl1.Pages[2].TabVisible := True
+      else
+        t.PageControl1.Pages[2].TabVisible := False;
     T.ShowModal;
     T.Free;
     id_oper := 0;
@@ -816,10 +886,23 @@ begin
     Class_StoredProc.ExecProc;
     Class_Transaction_Wr.Commit;
 
+    //если авансовый отчет подвязан к ведомости
     if (Class_StoredProc.ParamByName('out').AsInteger = 1) then
     begin
-      ShowMessage('Цей авансовий звіт є у відомостях. Не можна його редагувати');
-      Exit;
+      //проверяем, входит ли человек в ту группу, которая разрешает редактировать такие отчеты
+      error := Accmgmt.fibCheckPermission('/ROOT/JO4/Work_j4/Work_doc_j4/Avance_in_Ved_Edit','Edit');
+
+      //если не принадлежит
+      if error <> 0 then
+      begin
+        ShowMessage('Цей авансовий звіт є у відомостях. Не можна його редагувати');
+        Exit;
+      end
+      else //выдаем предупредительное сообщение; если передумал редактировать - выходим
+      if MessageDlg('УВАГА! Цей авансовий звіт є у відомостях. Ви дійсно бажаєте його редагувати?',
+        mtConfirmation, [mbYes, mbNo],0) = mrno
+      then
+        Exit;
     end;
     //*******************************
     prihod    := DataSetMain.fieldByName('R_PRIH_RAS').AsInteger;
@@ -836,6 +919,53 @@ begin
     //--------------------------------------------------------------
 
     T := TfmAddChangeAvance.Create(self, self, myclass, DatabaseMain, ChangeAvance, ras, kod_system, id_system, id, id_people);
+    //если в настроечной таблице j4_ini разрешено - высвечиваем вкладку "Витрати"
+    if (add_costs_in_ao_visible = 1)then
+      t.PageControl1.Pages[2].TabVisible := True
+    else
+      t.PageControl1.Pages[2].TabVisible := False;
+
+    if (show_place_mission_kom = 1) then //если в настроечной таблице j4_ini разрешено выбирать места командировки
+    begin
+      if (DataSetMain['r_kom_on'] = 1) then
+      begin
+        t.cxPlaceMissionButtonEdit.Visible := True;
+        t.cxPlaceMissionButton.Visible := True;
+        t.cxPlaceMissionLabel1.Visible := True;
+        t.cxPlaceMissionLabel2.Visible := True;
+        t.cxDateEditFrom.Visible := True;
+        t.cxDateEditTo.Visible := True;
+        t.cxDateEditFrom.Enabled := False;
+        t.cxDateEditTo.Enabled := False;
+        t.cxDateEditFrom.date := DataSetMain['R_KOM_DATE_BEG'];
+        t.cxDateEditTo.date := DataSetMain['R_KOM_DATE_END'];
+
+        t.cxLabelFrom.Visible := True;
+        t.cxLabelTo.Visible := True;
+        t.key_session_place_mission := DatabaseMain.Gen_Id('GEN_J4_DT_AO_PLACE_MIS_TMP', 1);
+        t.Class_Transaction_Wr.StartTransaction;
+        t.Class_StoredProc.StoredProcName                     := 'J4_DT_AO_PL_MISS_TMP_SEL_FOR_ED';
+        t.Class_StoredProc.ParamByName('id_ao').AsInt64       := DataSetMain['ID_AO'];
+        t.Class_StoredProc.ParamByName('KEY_SESSION').AsInt64 := t.key_session_place_mission;
+        t.Class_StoredProc.ExecProc;
+        t.Class_Transaction_Wr.Commit;
+        t.cxPlaceMissionButtonEdit.Text := t.Class_StoredProc.ParamByName('array_place_mission').AsString;
+        t.cxCheckBoxKom.Checked := True;
+      end
+      else
+      begin
+        t.cxCheckBoxKom.Checked := False;
+        t.cxPlaceMissionButtonEdit.Text := '';
+        t.cxPlaceMissionButtonEdit.Visible := false;
+        t.cxPlaceMissionButton.Visible := False;
+        t.cxPlaceMissionLabel1.Visible := False;
+        t.cxPlaceMissionLabel2.Visible := False;
+        t.cxDateEditFrom.Visible := False;
+        t.cxDateEditTo.Visible := False;
+        t.cxLabelFrom.Visible := False;
+        t.cxLabelTo.Visible := False;
+      end;
+    end;
 
     if DSetIni['J4_IS_SELECT_TYPE_DOC_AV_O'] = 1 then
     begin
@@ -947,6 +1077,11 @@ begin
     id        := TFIBBCDField(DataSetMain.FieldByName('ID_AO')).AsInt64;
     id_people := TFIBBCDField(DataSetMain.FieldByName('R_ID_MAN')).AsInt64;
     T := TfmAddChangeAvance.Create(self, self, myclass, DatabaseMain, ShowAvance, ras, kod_system, id_system, id, id_people);
+    //если в настроечной таблице j4_ini разрешено - высвечиваем вкладку "Витрати"
+    if (add_costs_in_ao_visible = 1)then
+      t.PageControl1.Pages[2].TabVisible := True
+    else
+      t.PageControl1.Pages[2].TabVisible := False;
     T.ShowModal;
     T.Free;
 end;
@@ -977,6 +1112,53 @@ begin
     id        := TFIBBCDField(DataSetMain.FieldByName('ID_AO')).AsInt64;
     id_people := TFIBBCDField(DataSetMain.FieldByName('R_ID_MAN')).AsInt64;
     T := TfmAddChangeAvance.Create(self, self, myclass, DatabaseMain, ClonAvance, ras, kod_system, id_system, id, id_people);
+    //если в настроечной таблице j4_ini разрешено - высвечиваем вкладку "Витрати"
+    if (add_costs_in_ao_visible = 1)then
+      t.PageControl1.Pages[2].TabVisible := True
+    else
+      t.PageControl1.Pages[2].TabVisible := False;
+
+    if (show_place_mission_kom = 1) then //если в настроечной таблице j4_ini разрешено выбирать места командировки
+    begin
+      if (DataSetMain['r_kom_on'] = 1) then
+      begin
+        t.cxPlaceMissionButtonEdit.Visible := True;
+        t.cxPlaceMissionButton.Visible := True;
+        t.cxPlaceMissionLabel1.Visible := True;
+        t.cxPlaceMissionLabel2.Visible := True;
+        t.cxDateEditFrom.Visible := True;
+        t.cxDateEditTo.Visible := True;
+        t.cxDateEditFrom.Enabled := False;
+        t.cxDateEditTo.Enabled := False;
+        t.cxDateEditFrom.date := DataSetMain['R_KOM_DATE_BEG'];
+        t.cxDateEditTo.date := DataSetMain['R_KOM_DATE_END'];
+
+        t.cxLabelFrom.Visible := True;
+        t.cxLabelTo.Visible := True;
+        t.key_session_place_mission := DatabaseMain.Gen_Id('GEN_J4_DT_AO_PLACE_MIS_TMP', 1);
+        t.Class_Transaction_Wr.StartTransaction;
+        t.Class_StoredProc.StoredProcName                     := 'J4_DT_AO_PL_MISS_TMP_SEL_FOR_ED';
+        t.Class_StoredProc.ParamByName('id_ao').AsInt64       := DataSetMain['ID_AO'];
+        t.Class_StoredProc.ParamByName('KEY_SESSION').AsInt64 := t.key_session_place_mission;
+        t.Class_StoredProc.ExecProc;
+        t.Class_Transaction_Wr.Commit;
+        t.cxPlaceMissionButtonEdit.Text := t.Class_StoredProc.ParamByName('array_place_mission').AsString;
+        t.cxCheckBoxKom.Checked := True;
+      end
+      else
+      begin
+        t.cxCheckBoxKom.Checked := False;
+        t.cxPlaceMissionButtonEdit.Text := '';
+        t.cxPlaceMissionButtonEdit.Visible := false;
+        t.cxPlaceMissionButton.Visible := False;
+        t.cxPlaceMissionLabel1.Visible := False;
+        t.cxPlaceMissionLabel2.Visible := False;
+        t.cxDateEditFrom.Visible := False;
+        t.cxDateEditTo.Visible := False;
+        t.cxLabelFrom.Visible := False;
+        t.cxLabelTo.Visible := False;
+      end;
+    end;
     T.ShowModal;
     T.Free;
 end;
@@ -1081,6 +1263,14 @@ procedure TfmAvanceOtchet.ActionPrintReestrExecute(Sender: TObject);
 var T :  TfrmPrintReestr;
 begin
     T := TfrmPrintReestr.Create(self, self, DatabaseMain);
+    T.ShowModal;
+    T.Free;
+end;
+
+procedure TfmAvanceOtchet.ActionPrintReestrPDVExecute(Sender: TObject);
+var T :  TfrmPrintReestrPDV;
+begin
+    T := TfrmPrintReestrPDV.Create(self, self, DatabaseMain);
     T.ShowModal;
     T.Free;
 end;

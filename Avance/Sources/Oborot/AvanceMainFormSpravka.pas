@@ -144,28 +144,6 @@ type
     cxLabel6: TcxLabel;
     cxGrid3DBBandedTableView1DBBandedColumn5: TcxGridDBBandedColumn;
     cxGrid3DBBandedTableView1DBBandedColumn7: TcxGridDBBandedColumn;
-    DataSetDebetSUMMA: TFIBBCDField;
-    DataSetDebetKOD_SCH: TFIBStringField;
-    DataSetDebetDATE_DOC: TFIBDateField;
-    DataSetDebetNUM_DOC: TFIBStringField;
-    DataSetDebetNAME: TFIBStringField;
-    DataSetDebetNUM_SCH_KOR: TFIBStringField;
-    DataSetDebetSM_KOD: TFIBIntegerField;
-    DataSetDebetRAZ_KOD: TFIBIntegerField;
-    DataSetDebetST_KOD: TFIBIntegerField;
-    DataSetDebetKEKV_KOD: TFIBIntegerField;
-    DataSetDebetS_R_S_K: TFIBStringField;
-    DataSetKreditSUMMA: TFIBBCDField;
-    DataSetKreditKOD_SCH: TFIBStringField;
-    DataSetKreditDATE_DOC: TFIBDateField;
-    DataSetKreditNUM_DOC: TFIBStringField;
-    DataSetKreditNAME: TFIBStringField;
-    DataSetKreditNUM_SCH_KOR: TFIBStringField;
-    DataSetKreditSM_KOD: TFIBIntegerField;
-    DataSetKreditRAZ_KOD: TFIBIntegerField;
-    DataSetKreditST_KOD: TFIBIntegerField;
-    DataSetKreditKEKV_KOD: TFIBIntegerField;
-    DataSetKreditS_R_S_K: TFIBStringField;
     cxGrid3DBBandedTableView1DBBandedColumn6: TcxGridDBBandedColumn;
     cxGrid4DBBandedTableView1DBBandedColumn5: TcxGridDBBandedColumn;
     cxGrid4DBBandedTableView1DBBandedColumn6: TcxGridDBBandedColumn;
@@ -259,6 +237,8 @@ type
     DataSetOborotMenDocPK_ID: TFIBBCDField;
     TransactionWr: TpFIBTransaction;
     frxReport1: TfrxReport;
+    cxGrid3DBBandedTableView1DBBandedColumn8: TcxGridDBBandedColumn;
+    cxGrid4DBBandedTableView1DBBandedColumn8: TcxGridDBBandedColumn;
     procedure DataSetFIOAfterScroll(DataSet: TDataSet);
     procedure ActionRefreshExecute(Sender: TObject);
     procedure cxComboBoxSystemClick(Sender: TObject);
@@ -388,7 +368,7 @@ begin
     cxGrid3DBBandedTableView1.Bands.Items[0].Caption := Un_R_file_Alex.J4_OBOROT_BAND_REKV_DOC;
     cxGrid3DBBandedTableView1.Bands.Items[1].Caption := Un_R_file_Alex.J4_OBOROT_BAND_REKV_PROV;
     cxGrid3DBBandedTableView1DBBandedColumn1.Caption := Un_R_file_Alex.J4_MAIN_FORM_NUMBER;
-    cxGrid3DBBandedTableView1DBBandedColumn2.Caption := Un_R_file_Alex.J4_MAIN_FORM_DATA;
+    //cxGrid3DBBandedTableView1DBBandedColumn2.Caption := Un_R_file_Alex.J4_MAIN_FORM_DATA;
     cxGrid3DBBandedTableView1DBBandedColumn3.Caption := Un_R_file_Alex.KASSA_DEBET;
     cxGrid3DBBandedTableView1DBBandedColumn4.Caption := Un_R_file_Alex.J4_MAIN_FORM_SUMMA;
 
@@ -399,7 +379,7 @@ begin
     cxGrid4DBBandedTableView1.Bands.Items[0].Caption := Un_R_file_Alex.J4_OBOROT_BAND_REKV_DOC;
     cxGrid4DBBandedTableView1.Bands.Items[1].Caption := Un_R_file_Alex.J4_OBOROT_BAND_REKV_PROV;
     cxGrid4DBBandedTableView1DBBandedColumn1.Caption := Un_R_file_Alex.J4_MAIN_FORM_NUMBER;
-    cxGrid4DBBandedTableView1DBBandedColumn2.Caption := Un_R_file_Alex.J4_MAIN_FORM_DATA;
+    //cxGrid4DBBandedTableView1DBBandedColumn2.Caption := Un_R_file_Alex.J4_MAIN_FORM_DATA;
     cxGrid4DBBandedTableView1DBBandedColumn3.Caption := Un_R_file_Alex.KASSA_KREDIT;
     cxGrid4DBBandedTableView1DBBandedColumn4.Caption := Un_R_file_Alex.J4_MAIN_FORM_SUMMA;
     cxGrid4DBBandedTableView1DBBandedColumn5.Caption := Un_R_file_Alex.TYPE_DOC_SHORT;

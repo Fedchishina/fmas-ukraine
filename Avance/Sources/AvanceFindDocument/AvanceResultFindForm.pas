@@ -63,15 +63,6 @@ type
     cxLabel2: TcxLabel;
     LabelNote: TLabel;
     ActionDoc: TAction;
-    pFIBDataSet1ID_DOC: TFIBBCDField;
-    pFIBDataSet1NUMBER_DOC: TFIBStringField;
-    pFIBDataSet1SUMMA_PRIH: TFIBBCDField;
-    pFIBDataSet1NOTE_DOC: TFIBStringField;
-    pFIBDataSet1FIO_DOC: TFIBStringField;
-    pFIBDataSet1PRIHOD: TFIBIntegerField;
-    pFIBDataSet1DATE_DOC: TFIBDateField;
-    pFIBDataSet1SUMMA_RASH: TFIBBCDField;
-    pFIBDataSet1SHORT_NAME_DOC: TFIBStringField;
     cxGrid1DBTableView1DBColumn6: TcxGridDBColumn;
     DataSetLang: TpFIBDataSet;
     cxGrid2: TcxGrid;
@@ -141,12 +132,8 @@ type
     DataSourceProv: TDataSource;
     cxGridDBTableView1DBColumn1: TcxGridDBColumn;
     frxDBDataset1: TfrxDBDataset;
-    pFIBDataSet1TIN: TFIBStringField;
     frxDesigner1: TfrxDesigner;
-    pFIBDataSet1ID_MEN_: TFIBStringField;
     frxXMLExport1: TfrxXMLExport;
-    pFIBDataSet1KOM_DATE_BEG: TFIBDateField;
-    pFIBDataSet1KOM_DATE_END: TFIBDateField;
     DataSetRazd: TpFIBDataSet;
     DataSetRazdFIO_DOC: TFIBStringField;
     DataSetRazdTIN: TFIBStringField;
@@ -169,6 +156,7 @@ type
     flag_na_dataset : boolean;
   public
     id_session : int64;
+    is_visible_checkbox_place_mission :Integer;
     constructor Create(AOwner: TComponent; mform: TfmAvanceFindForm); reintroduce; overload;
   end;
 
@@ -254,6 +242,10 @@ begin
         begin
             Query.SQL.Add('AND (exists (select * from j4_dt_ao where j4_dt_ao.ID_DT_DOC=pub_dt_all_doc.pk_id and j4_dt_ao.KOM_ON=1 and j4_dt_ao.KOM_DATE_END>='''+mainform.cxDateKomFrom.Text+''' and j4_dt_ao.KOM_DATE_BEG <='''+mainform.cxDateKomTo.Text+'''))');
         end;
+        if mainform.cxCheckBoxKomPlace.Checked then
+        begin
+            Query.SQL.Add('and ( exists ( select * from j4_dt_ao where j4_dt_ao.ID_DT_DOC=pub_dt_all_doc.pk_id and exists (select * from j4_dt_ao_place_mission where j4_dt_ao_place_mission.id_ao=j4_dt_ao.id_ao and j4_dt_ao_place_mission.id_place_mission = '''+inttostr(mainform.id_place_mission)+''')))');
+        end;
         if mainform.cxCheckBoxNumber.Checked then
         begin
             Query.SQL.Add('AND upper(pub_dt_all_doc.num_doc) like '''+'%' + mainform.cxTextEditNumber.Text + '%'+'''');
@@ -314,6 +306,10 @@ begin
         if mainform.cxCheckBoxKom.Checked then
         begin
             Query.SQL.Add('AND (exists (select * from j4_dt_ao where j4_dt_ao.ID_DT_DOC=pub_dt_all_doc.pk_id and j4_dt_ao.KOM_ON=1 and j4_dt_ao.KOM_DATE_END>='''+mainform.cxDateKomFrom.Text+''' and j4_dt_ao.KOM_DATE_BEG <='''+mainform.cxDateKomTo.Text+'''))');
+        end;
+        if mainform.cxCheckBoxKomPlace.Checked then
+        begin
+            Query.SQL.Add('and ( exists ( select * from j4_dt_ao where j4_dt_ao.ID_DT_DOC=pub_dt_all_doc.pk_id and exists (select * from j4_dt_ao_place_mission where j4_dt_ao_place_mission.id_ao=j4_dt_ao.id_ao and j4_dt_ao_place_mission.id_place_mission = '''+inttostr(mainform.id_place_mission)+''')))');
         end;
         if mainform.cxCheckBoxNumber.Checked then
         begin
@@ -443,6 +439,20 @@ begin
     DataSetLang.SQLs.SelectSQL.Text := 'SELECT * FROM PUB_SYS_DATA';
     DataSetLang.Open;
     id_lang := DataSetLang.FBN('ID_LANGUAGE').AsInteger;
+
+    DataSetLang.Close;
+    DataSetLang.SQLs.SelectSQL.Text := 'SELECT * FROM J4_INI';
+    DataSetLang.Open;
+
+    if (DataSetLang['J4_IS_ADD_PLACE_MISSION_IN_AO'] = 1) then
+    begin
+      is_visible_checkbox_place_mission := 1;
+    end
+    else
+    begin
+      is_visible_checkbox_place_mission := 0;
+    end;
+
     DataSetLang.Close;
 
 
@@ -458,6 +468,7 @@ begin
                     then frxReport1.Variables['pr'] := '0'
                     else frxReport1.Variables['pr'] := '1';
                 if id_lang = 0 then frxReport1.LoadFromFile(ExtractFilePath(Application.ExeName)+ 'Reports\Avance\Avance_find_all_ukr.fr3');
+                frxReport1.Variables['is_visible_place_mission'] := res[4];
                 if mainform.cxCheckBox2.Checked
                     then frxReport1.Variables['OS_SCH']   := Quotedstr(mainform.cxButtonEdit1.Text)
                     else frxReport1.Variables['OS_SCH']   := Quotedstr(mainform.cxLabel1.Caption);
@@ -488,7 +499,12 @@ begin
                      frxReport1.Print;
 
                 end
-                else frxReport1.ShowReport(true);
+                else
+                begin
+                  //frxReport1.DesignReport;
+                  frxReport1.ShowReport(true);
+                end;
+
 
             end;
             if res[1][0] = 1 then
@@ -500,6 +516,7 @@ begin
                     else frxReport1.Variables['pr'] := '1';
 
                 if id_lang = 0 then frxReport1.LoadFromFile(ExtractFilePath(Application.ExeName)+ 'Reports\Avance\Avance_find_all_note_ukr.fr3');
+                frxReport1.Variables['is_visible_place_mission'] := res[4];
                 if mainform.cxCheckBox2.Checked
                     then frxReport1.Variables['OS_SCH']   := Quotedstr(mainform.cxButtonEdit1.Text)
                     else frxReport1.Variables['OS_SCH']   := Quotedstr(mainform.cxLabel1.Caption);
@@ -528,7 +545,11 @@ begin
                 begin
                       frxReport1.Print;
                 end
-                else frxReport1.ShowReport(True);
+                else
+                begin
+                  //frxReport1.DesignReport;
+                  frxReport1.ShowReport(true);
+                end;
                 
             end;
             if res[2][0] = 1 then
@@ -540,6 +561,7 @@ begin
                     else frxReport1.Variables['pr'] := '1';
 
                 if id_lang = 0 then frxReport1.LoadFromFile(ExtractFilePath(Application.ExeName)+ 'Reports\Avance\Avance_find_all_note_group_ukr.fr3');
+                frxReport1.Variables['is_visible_place_mission'] := res[4];
                 if mainform.cxCheckBox2.Checked
                     then frxReport1.Variables['OS_SCH']   := Quotedstr(mainform.cxButtonEdit1.Text)
                     else frxReport1.Variables['OS_SCH']   := Quotedstr(mainform.cxLabel1.Caption);
@@ -568,7 +590,11 @@ begin
                 begin
                       frxReport1.Print;
                 end
-                else frxReport1.ShowReport(true);
+                else
+                begin
+                  //frxReport1.DesignReport;
+                  frxReport1.ShowReport(true);
+                end;
                 //frxReport1.designreport;
             end;
             if res[3][0] = 1 then
@@ -585,6 +611,7 @@ begin
                     else frxReport1.Variables['pr'] := '1';
 
                 if id_lang = 0 then frxReport1.LoadFromFile(ExtractFilePath(Application.ExeName)+ 'Reports\Avance\Avance_find_all_razd_group_ukr.fr3');
+                frxReport1.Variables['is_visible_place_mission'] := res[4];
                 if mainform.cxCheckBox2.Checked
                     then frxReport1.Variables['OS_SCH']   := Quotedstr(mainform.cxButtonEdit1.Text)
                     else frxReport1.Variables['OS_SCH']   := Quotedstr(mainform.cxLabel1.Caption);
@@ -613,8 +640,11 @@ begin
                 begin
                       frxReport1.Print;
                 end
-                else frxReport1.ShowReport(true);
-                //frxReport1.designreport;
+                else
+                begin
+                  //frxReport1.DesignReport;
+                  frxReport1.ShowReport(true);
+                end;
             end;
         end;
 

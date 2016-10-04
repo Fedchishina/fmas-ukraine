@@ -1,6 +1,6 @@
 object fmAvanceResultFindForm: TfmAvanceResultFindForm
-  Left = 264
-  Top = 186
+  Left = 410
+  Top = 192
   Width = 831
   Height = 593
   Caption = 'fmAvanceResultFindForm'
@@ -409,64 +409,6 @@ object fmAvanceResultFindForm: TfmAvanceResultFindForm
     Left = 128
     Top = 40
     poSQLINT64ToBCD = True
-    object pFIBDataSet1ID_DOC: TFIBBCDField
-      FieldName = 'ID_DOC'
-      Size = 0
-      RoundByScale = True
-    end
-    object pFIBDataSet1NUMBER_DOC: TFIBStringField
-      FieldName = 'NUMBER_DOC'
-      Size = 120
-      EmptyStrToNull = True
-    end
-    object pFIBDataSet1SUMMA_PRIH: TFIBBCDField
-      FieldName = 'SUMMA_PRIH'
-      Size = 2
-      RoundByScale = True
-    end
-    object pFIBDataSet1NOTE_DOC: TFIBStringField
-      FieldName = 'NOTE_DOC'
-      Size = 255
-      EmptyStrToNull = True
-    end
-    object pFIBDataSet1FIO_DOC: TFIBStringField
-      DisplayWidth = 150
-      FieldName = 'FIO_DOC'
-      Size = 150
-      EmptyStrToNull = True
-    end
-    object pFIBDataSet1PRIHOD: TFIBIntegerField
-      FieldName = 'PRIHOD'
-    end
-    object pFIBDataSet1DATE_DOC: TFIBDateField
-      FieldName = 'DATE_DOC'
-    end
-    object pFIBDataSet1SUMMA_RASH: TFIBBCDField
-      FieldName = 'SUMMA_RASH'
-      Size = 2
-      RoundByScale = True
-    end
-    object pFIBDataSet1SHORT_NAME_DOC: TFIBStringField
-      FieldName = 'SHORT_NAME_DOC'
-      Size = 25
-      EmptyStrToNull = True
-    end
-    object pFIBDataSet1TIN: TFIBStringField
-      FieldName = 'TIN'
-      Size = 10
-      EmptyStrToNull = True
-    end
-    object pFIBDataSet1ID_MEN_: TFIBStringField
-      FieldName = 'ID_MEN_'
-      Size = 16
-      EmptyStrToNull = True
-    end
-    object pFIBDataSet1KOM_DATE_BEG: TFIBDateField
-      FieldName = 'KOM_DATE_BEG'
-    end
-    object pFIBDataSet1KOM_DATE_END: TFIBDateField
-      FieldName = 'KOM_DATE_END'
-    end
   end
   object pFIBTransaction1: TpFIBTransaction
     DefaultDatabase = pFIBDatabase1

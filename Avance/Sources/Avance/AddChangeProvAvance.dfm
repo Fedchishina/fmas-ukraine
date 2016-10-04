@@ -1,6 +1,6 @@
 object fmAddChangeProv: TfmAddChangeProv
-  Left = 223
-  Top = 114
+  Left = 388
+  Top = 112
   Width = 725
   Height = 581
   Caption = 'fmAddChangeProv'

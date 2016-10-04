@@ -1,9 +1,9 @@
 object fmJNastroyka: TfmJNastroyka
-  Left = 400
-  Top = 140
-  Width = 723
-  Height = 665
-  VertScrollBar.Position = 199
+  Left = 360
+  Top = 52
+  Width = 730
+  Height = 579
+  VertScrollBar.Position = 311
   Caption = 'fmJNastroyka'
   Color = clCream
   Font.Charset = DEFAULT_CHARSET
@@ -22,9 +22,9 @@ object fmJNastroyka: TfmJNastroyka
   TextHeight = 13
   object Panel1: TPanel
     Left = 10
-    Top = -197
+    Top = -309
     Width = 682
-    Height = 783
+    Height = 850
     BevelOuter = bvSpace
     BorderStyle = bsSingle
     ParentColor = True
@@ -538,10 +538,48 @@ object fmJNastroyka: TfmJNastroyka
       Style.Color = clInfoBk
       TabOrder = 42
     end
+    object CheckBox_is_add_costs_in_ao: TcxCheckBox
+      Left = 106
+      Top = 768
+      Width = 121
+      Height = 21
+      Properties.DisplayUnchecked = 'False'
+      Properties.Caption = ''
+      TabOrder = 43
+    end
+    object Memo_is_add_costs_in_ao: TcxMemo
+      Left = 256
+      Top = 768
+      Width = 413
+      Height = 20
+      Lines.Strings = (
+        'Memo_is_add_costs_in_ao')
+      Style.Color = clInfoBk
+      TabOrder = 44
+    end
+    object memo_is_add_place_mission_in_ao: TcxMemo
+      Left = 256
+      Top = 792
+      Width = 413
+      Height = 20
+      Lines.Strings = (
+        'memo_is_add_place_mission_in_ao')
+      Style.Color = clInfoBk
+      TabOrder = 45
+    end
+    object CheckBox_is_add_place_mission_in_ao: TcxCheckBox
+      Left = 106
+      Top = 792
+      Width = 121
+      Height = 21
+      Properties.DisplayUnchecked = 'False'
+      Properties.Caption = ''
+      TabOrder = 46
+    end
   end
   object cxCheckBoxRasshifr: TcxCheckBox
     Left = 102
-    Top = -179
+    Top = -291
     Width = 25
     Height = 21
     Properties.Alignment = taRightJustify
@@ -556,7 +594,7 @@ object fmJNastroyka: TfmJNastroyka
   end
   object cxMemoRasshifr: TcxMemo
     Left = 264
-    Top = -184
+    Top = -296
     Width = 415
     Height = 23
     ParentColor = True
@@ -567,7 +605,7 @@ object fmJNastroyka: TfmJNastroyka
   end
   object cxButton1: TcxButton
     Left = 450
-    Top = 589
+    Top = 509
     Width = 115
     Height = 21
     Caption = #1047#1072#1087#1080#1089#1072#1090#1080
@@ -583,7 +621,7 @@ object fmJNastroyka: TfmJNastroyka
   end
   object cxButton2: TcxButton
     Left = 570
-    Top = 589
+    Top = 509
     Width = 115
     Height = 21
     Caption = #1047#1072#1082#1088#1080#1090#1080
@@ -599,7 +637,7 @@ object fmJNastroyka: TfmJNastroyka
   end
   object cxCheckBoxUseAccess: TcxCheckBox
     Left = 110
-    Top = 185
+    Top = 73
     Width = 25
     Height = 21
     Properties.Alignment = taRightJustify
@@ -614,7 +652,7 @@ object fmJNastroyka: TfmJNastroyka
   end
   object cxMemoUseAccess: TcxMemo
     Left = 267
-    Top = 188
+    Top = 76
     Width = 415
     Height = 22
     ParentColor = True
@@ -625,7 +663,7 @@ object fmJNastroyka: TfmJNastroyka
   end
   object cxMemoReestrTitle: TcxMemo
     Left = 267
-    Top = 211
+    Top = 99
     Width = 415
     Height = 31
     ParentFont = False
@@ -637,7 +675,7 @@ object fmJNastroyka: TfmJNastroyka
   end
   object cxMemoHead: TcxMemo
     Left = 11
-    Top = 211
+    Top = 99
     Width = 246
     Height = 23
     ParentColor = True
@@ -648,7 +686,7 @@ object fmJNastroyka: TfmJNastroyka
   end
   object CheckBoxNewNumAlg: TcxCheckBox
     Left = 109
-    Top = 244
+    Top = 132
     Width = 22
     Height = 21
     Properties.Alignment = taRightJustify
@@ -664,7 +702,7 @@ object fmJNastroyka: TfmJNastroyka
   end
   object MemoNewNumAlg: TcxMemo
     Left = 268
-    Top = 247
+    Top = 135
     Width = 413
     Height = 23
     ParentColor = True
@@ -675,7 +713,7 @@ object fmJNastroyka: TfmJNastroyka
   end
   object DateEditNewNumAlg: TcxDateEdit
     Left = 22
-    Top = 272
+    Top = 160
     Width = 178
     Height = 21
     Enabled = False
@@ -684,7 +722,7 @@ object fmJNastroyka: TfmJNastroyka
   end
   object MemoDatNewNumAlg: TcxMemo
     Left = 268
-    Top = 272
+    Top = 160
     Width = 413
     Height = 23
     ParentColor = True
@@ -695,7 +733,7 @@ object fmJNastroyka: TfmJNastroyka
   end
   object ButtonEditFioCheck: TcxButtonEdit
     Left = 22
-    Top = 297
+    Top = 185
     Width = 221
     Height = 21
     Properties.Buttons = <
@@ -710,7 +748,7 @@ object fmJNastroyka: TfmJNastroyka
   end
   object MemoFioCheck: TcxMemo
     Left = 268
-    Top = 297
+    Top = 185
     Width = 415
     Height = 23
     Lines.Strings = (
@@ -723,7 +761,7 @@ object fmJNastroyka: TfmJNastroyka
   end
   object ButtonEditGlBuhg: TcxButtonEdit
     Left = 22
-    Top = 322
+    Top = 210
     Width = 221
     Height = 21
     Properties.Buttons = <
@@ -738,7 +776,7 @@ object fmJNastroyka: TfmJNastroyka
   end
   object MemoGlBuh: TcxMemo
     Left = 268
-    Top = 322
+    Top = 210
     Width = 414
     Height = 23
     ParentColor = True
@@ -749,7 +787,7 @@ object fmJNastroyka: TfmJNastroyka
   end
   object CheckBoxMoPrintDocOst: TcxCheckBox
     Left = 117
-    Top = 345
+    Top = 233
     Width = 22
     Height = 21
     Properties.Alignment = taRightJustify
@@ -765,7 +803,7 @@ object fmJNastroyka: TfmJNastroyka
   end
   object MemoMOPrintDocOst: TcxMemo
     Left = 268
-    Top = 348
+    Top = 236
     Width = 413
     Height = 33
     ParentColor = True

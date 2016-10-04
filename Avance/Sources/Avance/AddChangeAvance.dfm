@@ -1,8 +1,8 @@
 object fmAddChangeAvance: TfmAddChangeAvance
-  Left = 444
-  Top = 246
+  Left = 144
+  Top = 179
   Width = 1090
-  Height = 753
+  Height = 582
   Color = clInactiveBorder
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -12,21 +12,22 @@ object fmAddChangeAvance: TfmAddChangeAvance
   OldCreateOrder = False
   Position = poScreenCenter
   OnActivate = FormActivate
+  OnClose = FormClose
   PixelsPerInch = 96
   TextHeight = 13
   object Panel1: TPanel
     Left = 0
     Top = 217
     Width = 1074
-    Height = 472
+    Height = 301
     Align = alClient
     TabOrder = 1
     object PageControl1: TPageControl
       Left = 1
       Top = 1
       Width = 1072
-      Height = 427
-      ActivePage = TabSheet2
+      Height = 256
+      ActivePage = TabSheet6
       Align = alClient
       TabOrder = 0
       OnChanging = PageControl1Changing
@@ -36,7 +37,7 @@ object fmAddChangeAvance: TfmAddChangeAvance
           Left = 0
           Top = 0
           Width = 1064
-          Height = 278
+          Height = 107
           Align = alClient
           TabOrder = 0
           object cxGrid1DBTableView1: TcxGridDBTableView
@@ -146,7 +147,7 @@ object fmAddChangeAvance: TfmAddChangeAvance
         end
         object cxSplitter1: TcxSplitter
           Left = 0
-          Top = 278
+          Top = 107
           Width = 1064
           Height = 8
           HotZoneClassName = 'TcxSimpleStyle'
@@ -156,7 +157,7 @@ object fmAddChangeAvance: TfmAddChangeAvance
         end
         object PageControl2: TPageControl
           Left = 0
-          Top = 286
+          Top = 115
           Width = 1064
           Height = 113
           ActivePage = TabSheet5
@@ -434,7 +435,7 @@ object fmAddChangeAvance: TfmAddChangeAvance
           Left = 0
           Top = 0
           Width = 1064
-          Height = 399
+          Height = 228
           Align = alClient
           PopupMenu = PopupMenuRas
           TabOrder = 1
@@ -527,10 +528,90 @@ object fmAddChangeAvance: TfmAddChangeAvance
           end
         end
       end
+      object TabSheet6: TTabSheet
+        Caption = #1055#1086#1076#1072#1090#1082#1086#1074#1080#1081' '#1082#1088#1077#1076#1080#1090
+        ImageIndex = 2
+        object cxGrid3: TcxGrid
+          Left = 0
+          Top = 0
+          Width = 1064
+          Height = 228
+          Align = alClient
+          TabOrder = 0
+          object cxGrid3DBTableView1: TcxGridDBTableView
+            DataController.DataSource = DataSourceCost
+            DataController.Filter.Criteria = {FFFFFFFF0000000000}
+            DataController.Summary.DefaultGroupSummaryItems = <>
+            DataController.Summary.FooterSummaryItems = <
+              item
+                Format = ',0.00'#39#39';-,0.00'#39#39
+                Kind = skSum
+                Column = cxGrid3DBTableView1DBColumn2
+              end
+              item
+                Format = ',0.00'#39#39';-,0.00'#39#39
+                Kind = skSum
+                Column = cxGrid3DBTableView1DBColumn3
+              end>
+            DataController.Summary.SummaryGroups = <>
+            NavigatorButtons.ConfirmDelete = False
+            OptionsSelection.CellSelect = False
+            OptionsView.ColumnAutoWidth = True
+            OptionsView.Footer = True
+            OptionsView.GroupByBox = False
+            Styles.Background = cxStyleYellow
+            Styles.Content = cxStyleYellow
+            Styles.ContentEven = cxStyleYellow
+            Styles.ContentOdd = cxStyleYellow
+            Styles.Inactive = cxStyleYellow
+            Styles.IncSearch = cxStyleYellow
+            Styles.Selection = cxStyle17
+            Styles.FilterBox = cxStyleYellow
+            Styles.Footer = cxStyleBorder
+            Styles.Group = cxStyleYellow
+            Styles.GroupByBox = cxStyleYellow
+            Styles.Header = cxStyleBorder
+            Styles.Indicator = cxStyleYellow
+            Styles.NewItemRowInfoText = cxStyleYellow
+            Styles.Preview = cxStyleYellow
+            object cxGrid3DBTableView1DBColumn1: TcxGridDBColumn
+              Caption = #1053#1072#1079#1074#1072' '#1074#1080#1090#1088#1072#1090
+              Options.Filtering = False
+              Width = 496
+              DataBinding.FieldName = 'RxMemoryDataCostName'
+            end
+            object cxGrid3DBTableView1DBColumn2: TcxGridDBColumn
+              Caption = #1057#1091#1084#1072
+              PropertiesClassName = 'TcxCurrencyEditProperties'
+              Properties.DisplayFormat = ',0.00'#39#39';-,0.00'#39#39
+              Options.Filtering = False
+              Width = 170
+              DataBinding.FieldName = 'RxMemoryDataCostSum'
+            end
+            object cxGrid3DBTableView1DBColumn3: TcxGridDBColumn
+              Caption = #1091' '#1090'.'#1095'. '#1055#1044#1042
+              PropertiesClassName = 'TcxCurrencyEditProperties'
+              Properties.DisplayFormat = ',0.00'#39#39';-,0.00'#39#39
+              Options.Filtering = False
+              Width = 142
+              DataBinding.FieldName = 'RxMemoryDataCostSumPDV'
+            end
+            object cxGrid3DBTableView1DBColumn4: TcxGridDBColumn
+              Caption = #1055#1088#1080#1084#1110#1090#1082#1072
+              Options.Filtering = False
+              Width = 254
+              DataBinding.FieldName = 'RxMemoryDataCostComment'
+            end
+          end
+          object cxGrid3Level1: TcxGridLevel
+            GridView = cxGrid3DBTableView1
+          end
+        end
+      end
     end
     object Panel3: TPanel
       Left = 1
-      Top = 428
+      Top = 257
       Width = 1072
       Height = 43
       Align = alBottom
@@ -835,7 +916,7 @@ object fmAddChangeAvance: TfmAddChangeAvance
       object cxMemoNote: TcxMemo
         Left = 88
         Top = 82
-        Width = 773
+        Width = 657
         Height = 33
         Anchors = [akLeft, akTop, akRight]
         Properties.MaxLength = 180
@@ -874,7 +955,7 @@ object fmAddChangeAvance: TfmAddChangeAvance
       object cxMemoDog: TcxMemo
         Left = 88
         Top = 118
-        Width = 774
+        Width = 657
         Height = 31
         Anchors = [akLeft, akTop, akRight]
         Properties.MaxLength = 180
@@ -975,6 +1056,41 @@ object fmAddChangeAvance: TfmAddChangeAvance
         TabOrder = 17
         Text = 'ButtonEditTypeDoc'
       end
+      object cxPlaceMissionButtonEdit: TcxMemo
+        Left = 816
+        Top = 88
+        Width = 209
+        Height = 57
+        Style.Color = 16776176
+        TabOrder = 18
+      end
+      object cxPlaceMissionButton: TcxButton
+        Left = 1027
+        Top = 92
+        Width = 33
+        Height = 49
+        Caption = '...'
+        TabOrder = 19
+        OnClick = cxPlaceMissionButtonClick
+      end
+      object cxPlaceMissionLabel1: TcxLabel
+        Left = 760
+        Top = 96
+        Width = 41
+        Height = 17
+        AutoSize = False
+        TabOrder = 20
+        Caption = #1084#1110#1089#1094#1103
+      end
+      object cxPlaceMissionLabel2: TcxLabel
+        Left = 744
+        Top = 112
+        Width = 73
+        Height = 17
+        AutoSize = False
+        TabOrder = 21
+        Caption = #1087#1077#1088#1077#1073#1091#1074#1072#1085#1085#1103
+      end
     end
     object ToolBar1: TToolBar
       Left = 1
@@ -1008,7 +1124,7 @@ object fmAddChangeAvance: TfmAddChangeAvance
   end
   object dxStatusBar1: TdxStatusBar
     Left = 0
-    Top = 689
+    Top = 518
     Width = 1074
     Height = 26
     Panels = <
@@ -1749,5 +1865,45 @@ object fmAddChangeAvance: TfmAddChangeAvance
     Left = 317
     Top = 258
     poSQLINT64ToBCD = True
+  end
+  object RxMemoryDataCost: TRxMemoryData
+    Active = True
+    FieldDefs = <
+      item
+        Name = 'RxMemoryDataCostName'
+        DataType = ftString
+        Size = 20
+      end
+      item
+        Name = 'RxMemoryDataCostSum'
+        DataType = ftCurrency
+      end
+      item
+        Name = 'RxMemoryDataCostSumPDV'
+        DataType = ftCurrency
+      end
+      item
+        Name = 'RxMemoryDataCostComment'
+        DataType = ftString
+        Size = 200
+      end
+      item
+        Name = 'RxMemoryDataCostId'
+        DataType = ftVariant
+      end>
+    Left = 837
+    Top = 370
+  end
+  object DataSourceCost: TDataSource
+    DataSet = RxMemoryDataCost
+    Left = 877
+    Top = 370
+  end
+  object pFIBDatabase1: TpFIBDatabase
+    SQLDialect = 1
+    Timeout = 0
+    WaitForRestoreConnect = 0
+    Left = 61
+    Top = 314
   end
 end
